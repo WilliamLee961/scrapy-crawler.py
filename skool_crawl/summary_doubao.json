@@ -1,0 +1,42 @@
+{
+  "generated_at": "2025-10-17T11:30:50.783900+00:00",
+  "group": "ai-automation-society",
+  "limit": 3,
+  "summary": "<SUMMARY>这些帖子主要讨论了三个方面的内容。一是关于人们失败的原因，指出多数人失败并非因为真正的失败，而是忘记了出发的初衷，强调要不断提醒自己最初的目标以保持前进动力。二是对比了AI自动化工具AgentKit和n8n，分析了它们的核心功能、适用场景、集成情况等，帮助开发者和企业根据自身需求选择合适的工具。三是有人寻求创建每月能抓取5万条列表的刮取工具的相关经验和可用于自动化的工具建议。\n<KEY_POINTS>\n- 多数人失败是因为忘记了开始的原因。\n- 保持前进的是提醒自己最初的目标而非单纯的“动力”。\n- AI正从简单工作流向复杂智能代理转变。\n- n8n核心聚焦工作流自动化、API编排和数据处理。\n- OpenAI AgentKit核心聚焦AI代理推理、聊天体验和内置评估。\n- n8n适用于后台自动化、多系统同步等。\n- OpenAI AgentKit适用于面向客户的AI聊天等。\n- 有人寻求每月抓取5万条列表的刮取工具及自动化建议。\n<SENTIMENT>整体情感态度为中性。帖子主要是在客观讨论人们失败的原因、对比AI自动化工具以及有人寻求刮取工具的帮助，未体现出明显的积极或负面倾向。",
+  "raw_response": {
+    "id": "0217607006433920353c1c00ae0c96712374521cc0112bb244c5b",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "moderation_hit_type": null,
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "<SUMMARY>这些帖子主要讨论了三个方面的内容。一是关于人们失败的原因，指出多数人失败并非因为真正的失败，而是忘记了出发的初衷，强调要不断提醒自己最初的目标以保持前进动力。二是对比了AI自动化工具AgentKit和n8n，分析了它们的核心功能、适用场景、集成情况等，帮助开发者和企业根据自身需求选择合适的工具。三是有人寻求创建每月能抓取5万条列表的刮取工具的相关经验和可用于自动化的工具建议。\n<KEY_POINTS>\n- 多数人失败是因为忘记了开始的原因。\n- 保持前进的是提醒自己最初的目标而非单纯的“动力”。\n- AI正从简单工作流向复杂智能代理转变。\n- n8n核心聚焦工作流自动化、API编排和数据处理。\n- OpenAI AgentKit核心聚焦AI代理推理、聊天体验和内置评估。\n- n8n适用于后台自动化、多系统同步等。\n- OpenAI AgentKit适用于面向客户的AI聊天等。\n- 有人寻求每月抓取5万条列表的刮取工具及自动化建议。\n<SENTIMENT>整体情感态度为中性。帖子主要是在客观讨论人们失败的原因、对比AI自动化工具以及有人寻求刮取工具的帮助，未体现出明显的积极或负面倾向。 ",
+          "role": "assistant",
+          "function_call": null,
+          "tool_calls": null,
+          "audio": null,
+          "reasoning_content": null
+        }
+      }
+    ],
+    "created": 1760700651,
+    "model": "doubao-1-5-pro-32k-250115",
+    "service_tier": "default",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 301,
+      "prompt_tokens": 695,
+      "total_tokens": 996,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "provisioned_tokens": null
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 0,
+        "provisioned_tokens": null
+      }
+    }
+  }
+}
