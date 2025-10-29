@@ -411,12 +411,47 @@ class CrawlerState:
                     doubao_key=API_CONFIG["doubao_api_key"],
                     model=API_CONFIG["doubao_model"]
                 )
-
+                # 原要求：保存为txt格式文件
                 summary_text = summary_result.get("summary", "").strip() or "（综述生成失败或为空）"
                 summary_path = f"reddit_summary_{subreddit}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
                 with open(summary_path, "w", encoding="utf-8") as f:
                     f.write(summary_text)
-                print(f"✅ 已保存综述文件：{summary_path}")
+                print(f" 已保存综述文件：{summary_path}")
+
+                # 易老师新要求：保存为Markdown + Word
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                subreddit = strategy.get("target_subreddit", "reddit")
+                base_name = f"reddit_summary_{subreddit}_{timestamp}"
+                # 生成 Markdown 文件
+                markdown_text = f"""# Reddit 子版块综合综述：{subreddit}
+                生成时间：{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+                ---
+
+                ## 摘要
+                {summary_text}
+
+                ---
+
+                ## 数据统计
+                - 帖子总数：{len(new_posts)}
+                - 数据来源：subreddit r/{subreddit}
+                - 模型：Doubao（{API_CONFIG["doubao_model"]}）
+
+                """
+                md_path = f"{base_name}.md"
+                with open(md_path, "w", encoding="utf-8") as f:
+                    f.write(markdown_text)
+                print(f" 已生成 Markdown 文件：{md_path}")
+                
+                # 转换为 Word 文件
+                try:
+                    import pypandoc
+                    docx_path = f"{base_name}.docx"
+                    pypandoc.convert_text(markdown_text, "docx", format="md", outputfile=docx_path, extra_args=["--standalone"])
+                    print(f" 已生成 Word 文件：{docx_path}")
+                except Exception as e:
+                    print(f" 生成 Word 文件失败：{e}")
 
                 # ---------- Step 6: 更新运行状态 ----------
                 self.add_crawled_result(new_posts)

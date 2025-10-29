@@ -526,8 +526,9 @@ def run(args):
     with open(args.summary_out, "w", encoding="utf-8") as f:
         json.dump(summary_obj, f, ensure_ascii=False, indent=2)
     print(f"[run] 已保存综合摘要到 {args.summary_out}")
-    from textwrap import dedent
 
+    # 易老师要求1：保存为 Markdown 文件
+    from textwrap import dedent
     md_path = args.summary_out.replace(".json", ".md")
 
     markdown_text = dedent(f"""

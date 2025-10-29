@@ -14440,3 +14440,1069 @@ The TL;DR:
 Watch the video or read the article for a short demo and a library that uses them as well.
 
 If you've been confusing about t-strings, I hope this explanation helps.",2025-10-22T15:07:19.933082
+1oiwxt5,https://www.reddit.com/r/Python/comments/1oiwxt5/why_doesnt_forloop_have_its_own_scope/,Why doesn't for-loop have it's own scope?,FUS3N,2025-10-29 14:08:00,17,94,"For the longest time I didn't know this but finally decided to ask, I get this is a thing and probably has been asked a lot but i genuinely want to kn...","For the longest time I didn't know this but finally decided to ask, I get this is a thing and probably has been asked a lot but i genuinely want to know... why? What gain is there other than convenience in certain situations, i feel like this could cause more issue than anything even though i can't name them all right now.
+
+I am also designing a language that works very similarly how python works, so maybe i get to learn something here.",2025-10-29T17:14:48.672417
+1oiufp2,https://www.reddit.com/r/Python/comments/1oiufp2/a_new_easy_way_on_windows_to_pip_install_gdal_and/,A new easy way on Windows to pip install GDAL and other tricky geospatial Python packages,pvdp-corbel,2025-10-29 11:41:59,4,0,"# What My Project Does
+
+[geospatial-wheels-index](https://github.com/corbel-spatial/geospatial-wheels-index) is a pip-compatible 
+[simple](https://pac...","# What My Project Does
+
+[geospatial-wheels-index](https://github.com/corbel-spatial/geospatial-wheels-index) is a pip-compatible 
+[simple](https://packaging.python.org/en/latest/specifications/simple-repository-api/) index for the [cgohlke/geospatial-wheels](https://github.com/cgohlke/geospatial-wheels) repository. It's just a few static html files served on GitHub Pages, and all the .whl files are pulled directly from `cgohlke/geospatial-wheels`. All you need to do is add an `index` flag:
+
+```
+pip install --index https://gisidx.github.io/gwi gdal
+```
+
+In addition to GDAL, this index points to the other prebuilt packages in `geospatial-wheels`: cartopy, cftime, fiona, h5py, netcdf4, pygeos, pyogrio, pyproj, rasterio, rtree, and shapely.
+
+Contributions are welcome!
+
+# Target Audience
+
+Mostly folks who straddle the traditional GIS and the developer/data science worlds, the people who would love to run Linux but are stuck on Windows for one reason or another. 
+
+For myself, I'm tired of dealing with the lack of an easy way to install the GDAL binaries on Windows so that I can `pip install gdal`, especially in a `uv` virtual environment or a CI/CD context where using `conda` can be a headache.
+
+# Comparison
+
+Often you'll have to build these packages from source or rely on `conda` or another add-on package manager. For example, the official GDAL docs suggest [various ways](https://gdal.org/en/stable/download.html#windows) to install the binaries. This is often not possible or requires extra work.
+
+The esteemed Christoph Gohlke has been providing prebuilt wheels for GDAL and other packages for a long time, and currently they can be found at his repository, [geospatial-wheels](https://github.com/cgohlke/geospatial-wheels). Awesome! But you have to manually find the one that matches your environment, download it somewhere, and then `pip install` the file... Still pretty annoying and difficult to automate. This index project simplifies the process down to the easy and portable `pip install`.
+
+This project was partly inspired by [gdal-installer](https://pypi.org/project/gdal-installer/) which is also worth checking out.",2025-10-29T17:14:48.672477
+1oiqata,https://www.reddit.com/r/Python/comments/1oiqata/blank_page_paralysis/,Blank page paralysis,Firm-Employment-9253,2025-10-29 08:24:19,0,15,"Hey everyone, 
+I hope you’re doing well, I don’t know if I’m the only one to endure this but every time I open a new script for a new project or just ...","Hey everyone, 
+I hope you’re doing well, I don’t know if I’m the only one to endure this but every time I open a new script for a new project or just a simple script I feel a blank page paralysis not knowing where to start. Frequently I will check Claude just for the start then I continue on my own. So I wanna know if some of you experienced this and if so what have u done to make it better.
+Thank you for your time !",2025-10-29T17:14:48.672523
+1oiq0e4,https://www.reddit.com/r/Python/comments/1oiq0e4/i_made_2_helper_powershell_functions_for_uv/,I made 2 helper powershell functions for uv.,Ok_Sympathy_8561,2025-10-29 08:11:13,0,2,"Obviously this only works for windows. This one publishes to pypi using uv and makes a github release:
+
+        function publish {
+            param(
+...","Obviously this only works for windows. This one publishes to pypi using uv and makes a github release:
+
+        function publish {
+            param(
+                [string] $PyPIToken,
+                [string] $GitHubToken,
+                [string] $GitHubRepo  # e.g. ""Adpros7/easier-openai""
+            )
+        
+            try {
+                Write-Host ""Cleaning build directories..."" -ForegroundColor Yellow
+                if (Test-Path ""dist"") { cmd /c rmdir /s /q dist }
+                if (Test-Path ""build"") { cmd /c rmdir /s /q build }
+        
+                Write-Host ""Building package..."" -ForegroundColor Cyan
+                uv build
+                uv build --wheel
+        
+                Write-Host ""Publishing to PyPI..."" -ForegroundColor Green
+                & cmd /c ""uv publish -t $PyPIToken""
+        
+                # ----------------------------------------
+                # Extract version from pyproject.toml
+                # ----------------------------------------
+                $toml = Get-Content pyproject.toml -Raw
+                if ($toml -match 'version\s*=\s*""(.*?)""') {
+                    $ver = $Matches[1]
+                } else {
+                    throw ""Could not find version in pyproject.toml""
+                }
+        
+                # Handle any version form: x, x.y, or x.y.z
+                $parts = $ver.Split('.')
+                $major = $parts[0]
+                $tagName = ""v$major""
+        
+                Write-Host ""Version found: $ver (Tag: $tagName)"" -ForegroundColor Cyan
+        
+                # ----------------------------------------
+                # Create/push Git tag
+                # ----------------------------------------
+                if (-not (git rev-parse --verify $tagName 2>$null)) {
+                    Write-Host ""Creating git tag $tagName"" -ForegroundColor Yellow
+                    git tag $tagName
+                }
+                Write-Host ""Pushing tag $tagName to origin..."" -ForegroundColor Yellow
+                git push origin $tagName
+        
+                # ----------------------------------------
+                # GitHub release
+                # ----------------------------------------
+                $env:GITHUB_TOKEN = $GitHubToken
+                Write-Host ""Creating or updating GitHub release..."" -ForegroundColor Green
+        
+                # Create release if missing, else upload files
+                $createCmd = ""gh release create $tagName dist/* --repo $GitHubRepo --title $tagName --notes 'Release $ver'""
+                $uploadCmd = ""gh release upload $tagName dist/* --repo $GitHubRepo --clobber""
+        
+                # Run create first
+                & cmd /c $createCmd
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host ""Release may already exist. Uploading assets..."" -ForegroundColor Yellow
+                    & cmd /c $uploadCmd
+                }
+        
+                Write-Host ""Done. Published $ver to PyPI and GitHub."" -ForegroundColor Green
+            }
+            catch {
+                Write-Host ""Error: $_"" -ForegroundColor Red
+            }
+        }
+
+This one adds packages to your venv from a `requirements.txt` or similar:
+
+    function uvadd {
+        param(
+            [string]$f,
+            [switch]$lock,
+            [Parameter(ValueFromRemainingArguments = $true)]
+            [string[]]$args
+        )
+    
+        if (-not $f) {
+            $f = if ($env:DEFAULT_UVADD_FILE) { 
+                Write-Host ""Using DEFAULT_UVADD_FILE: $env:DEFAULT_UVADD_FILE"" -ForegroundColor Yellow
+                $env:DEFAULT_UVADD_FILE
+            } else {
+                Write-Host ""Defaulting to requirements.txt"" -ForegroundColor Yellow
+                ""requirements.txt""
+            }
+        }
+    
+        if (-not (Test-Path "".venv\Scripts\activate"")) {
+            Write-Host ""No venv found. Creating..."" -ForegroundColor Yellow
+            uv venv; if ($LASTEXITCODE -ne 0) { Write-Host ""uv venv failed"" -ForegroundColor Red; return }
+            uv init;  if ($LASTEXITCODE -ne 0) { Write-Host ""uv init failed"" -ForegroundColor Red; return }
+        }
+    
+        try { .\.venv\Scripts\activate } 
+        catch { Write-Host ""Error activating venv: $($_.Exception.Message)"" -ForegroundColor Red; return }
+    
+        if (-not (Test-Path $f)) { Write-Host ""Missing $f"" -ForegroundColor Red; return }
+        $requirements = Get-Content $f | Where-Object { $_ -and ($_ -notmatch ""^#"") }
+        if (-not $requirements) { Write-Host ""$f is empty."" -ForegroundColor Red; return }
+    
+        if (-not (Test-Path ""pyproject.toml"")) {
+            Write-Host ""Creating pyproject.toml"" -ForegroundColor Yellow
+            @""
+    [project]
+    name = ""temp-project""
+    version = ""0.1.0""
+    authors = [{ name = ""Advik Mathur"", email = ""pranit.advik@gmail.com"" }]
+    ""@ | Out-File ""pyproject.toml"" -Encoding utf8
+        }
+    
+        Write-Host ""Syncing dependencies..."" -ForegroundColor Cyan
+        $depsString = ($requirements | ForEach-Object { ""`""$_`"""" }) -join "", ""
+        $depsLine = ""dependencies = [$depsString]""
+    
+        # Remove old dependencies block
+        $content = Get-Content ""pyproject.toml"" -Raw
+        $content = [regex]::Replace($content, '(?ms)^\s*dependencies\s*=\s*\[.*?\]\s*', '')
+        $lines = $content -split ""`r?`n""
+    
+        # Insert at end of [project]
+        $projStart = ($lines | Select-String '^\[project\]' | Select-Object -First 1)
+        if ($projStart) {
+            $projEnd = ($lines | Select-String '^\[' | Where-Object { $_.LineNumber -gt $projStart.LineNumber } | Select-Object -First 1)
+            if ($projEnd) {
+                $insertAt = $projEnd.LineNumber - 2
+                $before = $lines[0..$insertAt]
+                $after  = $lines[($insertAt + 1)..($lines.Count - 1)]
+                $lines = @($before + $depsLine + $after)
+            } else {
+                $lines += $depsLine
+            }
+        } else {
+            $lines += ""[project]""
+            $lines += $depsLine
+        }
+    
+        try {
+            $lines | Set-Content ""pyproject.toml"" -Encoding utf8
+            Write-Host ""pyproject.toml updated successfully."" -ForegroundColor Green
+        } catch {
+            Write-Host ""Failed to write pyproject.toml: $($_.Exception.Message)"" -ForegroundColor Red
+            return
+        }
+    
+        Write-Host ""Running: uv add -r $f $args"" -ForegroundColor Magenta
+        uv add -r $f @args
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host ""uv add failed ($LASTEXITCODE)"" -ForegroundColor Red
+            return
+        }
+    
+        # Delete lockfile unless --lock flag present
+        if (-not $lock.IsPresent) {
+            if (Test-Path ""uv.lock"") {
+                Remove-Item ""uv.lock"" -Force
+                Write-Host ""uv.lock deleted (use --lock to keep it)"" -ForegroundColor DarkGray
+            }
+        } else {
+            Write-Host ""Keeping uv.lock file (--lock specified)"" -ForegroundColor Yellow
+        }
+    
+        Write-Host ""All dependencies added successfully."" -ForegroundColor Green
+    }
+
+to have this run `notepad $PROFILE`, then paste this in, save, and restart your terminal",2025-10-29T17:14:48.672545
+1oio83q,https://www.reddit.com/r/Python/comments/1oio83q/i_made_a_youtube_to_mp4_converter/,I made a YouTube to mp4 Converter!,Intrepid-Carpet-3005,2025-10-29 06:55:54,0,1,Here is the link to my repo. [https://github.com/Coolythecoder/Youtube-to-mp4](https://github.com/Coolythecoder/Youtube-to-mp4),Here is the link to my repo. [https://github.com/Coolythecoder/Youtube-to-mp4](https://github.com/Coolythecoder/Youtube-to-mp4),2025-10-29T17:14:48.672781
+1oilkc1,https://www.reddit.com/r/Python/comments/1oilkc1/the_http_caching_python_deserves/,The HTTP caching Python deserves,karosis88,2025-10-29 05:09:35,29,10,"# What My Project Does
+
+[Hishel](https://hishel.com/1.0/) is an HTTP caching toolkit for python, which includes **sans-io** caching implementation, **...","# What My Project Does
+
+[Hishel](https://hishel.com/1.0/) is an HTTP caching toolkit for python, which includes **sans-io** caching implementation, **storages** for effectively storing request/response for later use, and integration with your lovely HTTP tool in python such as HTTPX, requests, fastapi, asgi (for any asgi based library), graphql and more!!
+
+Hishel uses **persistent storage** by default, so your cached responses survive program restarts.
+
+After **2 years** and over **63 MILLION pip installs**, I released the first major version with tons of new features to simplify caching.
+
+✨ Help Hishel grow! Give us a [star on GitHub](https://github.com/karpetrosyan/hishel) if you found it useful. ✨
+
+# Use Cases:
+
+HTTP response caching is something you can use **almost everywhere** to:
+
+* Improve the performance of your program
+* Work without an internet connection (offline mode)
+* Save money and stop wasting API calls—make a single request and reuse it many times!
+* Work even when your upstream server goes down
+* Avoid unnecessary downloads when content hasn't changed (what I call ""free caching""—it's completely free and can be configured to always serve the freshest data without re-downloading if nothing changed, like the browser's 304 Not Modified response)
+
+# QuickStart
+
+First, download and install Hishel using pip:
+
+pip: `pip install ""hishel[httpx, requests, fastapi, async]""==1.0.0`
+
+We've installed several integrations just for demonstration—you most likely won't need them all.
+
+    from hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient()
+    
+    # On first run of the program, this will store the response in the cache
+    # On second run, it will retrieve it from the cache
+    response = client.get(""https://hishel.com/"")
+    
+    
+    print(response.extensions[""hishel_from_cache""])  # Additional info about the cache statusfrom hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient()
+    
+    
+    # On first run of the program, this will store the response in the cache
+    # On second run, it will retrieve it from the cache
+    response = client.get(""https://hishel.com/"")
+    
+    
+    print(response.extensions[""hishel_from_cache""])  # Additional info about the cache status
+
+or with requests:
+
+    import requests
+    from hishel.requests import CacheAdapter
+    
+    session = requests.Session()
+    
+    adapter = CacheAdapter()
+    session.mount(""http://"", adapter)
+    session.mount(""https://"", adapter)
+    
+    response = session.get(""https://hishel.com/"")
+    
+    print(response.headers[""x-hishel-from-cache""])
+
+or with fastapi:
+
+    from hishel.asgi import ASGICacheMiddleware
+    from hishel.fastapi import cache
+    
+    app = FastAPI()
+    
+    processed_requests = 0
+    
+    .get(""/items/"", dependencies=[cache(max_age=5)])
+    async def read_item():
+        global processed_requests
+        processed_requests += 1
+        return {""created_at"": time.time(), ""processed_requests"": processed_requests}
+    
+    cached_app = ASGICacheMiddleware(app)
+
+As mentioned before, Hishel has a core system that is entirely independent from any HTTP library, making it easy to integrate with any HTTP client you prefer.
+
+# Caching Policies
+
+**SpecificationPolicy** \- RFC 9111 compliant HTTP caching (default):
+
+    from hishel import CacheOptions, SpecificationPolicy
+    from hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient(
+        policy=SpecificationPolicy(
+            cache_options=CacheOptions(
+                shared=False,                              # Use as private cache (browser-like)
+                supported_methods=[""GET"", ""HEAD"", ""POST""], # Cache GET, HEAD, and POST
+                allow_stale=True                           # Allow serving stale responses
+            )
+        )
+    )
+
+**FilterPolicy** \- Custom filtering logic for fine-grained control:
+
+    from hishel import FilterPolicy, BaseFilter, Request
+    from hishel.httpx import AsyncCacheClient
+    
+    class CacheOnlyAPIRequests(BaseFilter[Request]):
+        def needs_body(self) -> bool:
+            return False
+        
+        def apply(self, item: Request, body: bytes | None) -> bool:
+            return ""/api/"" in str(item.url)
+    
+    client = AsyncCacheClient(
+        policy=FilterPolicy(
+            request_filters=[CacheOnlyAPIRequests()] # also filter by body, status and etc.
+        )
+    )
+
+# Storage Backend
+
+Customize the storage backend behavior, set up global TTL (**note that TTL and most settings can also be configured at the per-request level**), choose whether to refresh TTL on access, and much more!
+
+    from hishel import SyncSqliteStorage
+    from hishel.httpx import SyncCacheClient
+    
+    storage = SyncSqliteStorage(
+        database_path=""my_cache.db"",
+        default_ttl=7200.0,           # Cache entries expire after 2 hours
+        refresh_ttl_on_access=True    # Reset TTL when accessing cached entries
+    )
+    
+    client = SyncCacheClient(storage=storage)
+
+# Per-request settings
+
+    from hishel.httpx import SyncCacheClient
+    
+    
+    client = SyncCacheClient()
+    
+    client.get(
+        ""https://hishel.com/"",
+        headers={
+            ""x-hishel-ttl"": ""3600"",  # invalidates cache after 1 hour, even if server says otherwise
+        },
+    )
+    
+    client.post(
+        ""https://some-graphql-endpoint.com/"",
+        json={""query"": ""{ users { id name } }""},
+        headers={""x-hishel-body-key""},  # Include body in cache key
+    )
+    
+    client.get(
+        ""https://hishel.com/"", 
+        headers={""x-hishel-refresh-ttl-on-access"": ""0""}  # do not refresh TTL on access
+    )
+
+# Target Audience
+
+**Backend Developers** \- Building APIs with FastAPI/Django, making repeated HTTP requests to external APIs
+
+**Data Engineers** \- Running ETL pipelines and batch jobs, fetching same data across multiple runs
+
+**CLI Tool Builders** \- Creating command-line tools, need instant responses and offline support
+
+**Web Scrapers** \- Building content crawlers, respect rate limits and need offline testing
+
+**API Library Maintainers** \- Wrapping external APIs (GitHub, Stripe, OpenAI), need transparent caching
+
+**GraphQL Developers** \- Need per-query caching with body-sensitive keys
+
+**Also great for:** DevOps teams, performance-focused companies, enterprise users needing RFC 9111 compliance
+
+⭐ GitHub: [https://github.com/karpetrosyan/hishelWhat](https://github.com/karpetrosyan/hishelWhat)",2025-10-29T17:14:48.672795
+1oihp4r,https://www.reddit.com/r/Python/comments/1oihp4r/plt_is_the_new_matplotlibpyplot/,plt is the new matplotlib.pyplot,borabimbu,2025-10-29 02:42:27,0,19,"If you're bored of typing:
+
+    import matplotlib.pyplot as plt
+
+Simply:
+
+    pip install plt
+
+Then you can just:
+
+    import plt
+
+Then use normally, ...","If you're bored of typing:
+
+    import matplotlib.pyplot as plt
+
+Simply:
+
+    pip install plt
+
+Then you can just:
+
+    import plt
+
+Then use normally, e.g.:
+
+    plt.plot([1, 2, 3], [1, 4, 9])
+    plt.show()
+
+[https://pypi.org/project/plt/](https://pypi.org/project/plt/)  
+[https://github.com/simbamford/plt](https://github.com/simbamford/plt)
+
+* **What My Project Does**
+
+It's a shim for matplotlib.pyplot that exports all contents of matplotlib.pyplot.
+
+* **Target Audience**
+
+Anyone who uses matplotlib.pyplot. It could be used in production.
+
+* **Comparison** 
+
+The state of the art is to type:
+
+    import matplotlib.pyplot as plt
+
+With this project you just:
+
+    import plt
+
+When you're 95, use your less arthritic fingers to type me a thank you.",2025-10-29T17:14:48.672868
+1oigffx,https://www.reddit.com/r/Python/comments/1oigffx/what_is_the_best_computer_or_programming_language/,What is the best computer or programming language to learn the basics then the more advanced stuff?,Tom-CyberBio-1968,2025-10-29 01:55:09,0,21,I have been studying basic programming for years and kind of get the basics if else etc. Still a bit stuck on a lot of the more advanced stuff. As for...,I have been studying basic programming for years and kind of get the basics if else etc. Still a bit stuck on a lot of the more advanced stuff. As for usage I would like to learn basic app programming such as making GUI programs etc. Not thinking of programming games right away but long term goals say in years I might want to give that a try. I would really like to get the skills to make something like a low resource Linux desktop or components of such. I really want to learn C++ but heard Python is easier to learn. What would you recommend?,2025-10-29T17:14:48.672930
+1oig9i0,https://www.reddit.com/r/Python/comments/1oig9i0/gvit_automatic_python_virtual_environment_setup/,gvit - Automatic Python virtual environment setup for every Git repo,Candid-Handle4074,2025-10-29 01:49:02,0,20,"Hey r/Python! 👋
+
+I got tired of doing this every time I cloned a repo:
+
+    git clone repo
+    cd repo
+    python -m venv .venv
+    source .venv/bin/a...","Hey r/Python! 👋
+
+I got tired of doing this every time I cloned a repo:
+
+    git clone repo
+    cd repo
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+So I built **gvit** to do it automatically:
+
+`gvit clone repo`
+
+That's it. Environment created, dependencies installed, ready to code. But **gvit** is much more than this!
+
+**What it does?**
+
+* **✅** Automatically creates environments (and install dependencies) when cloning or initializing repositories.
+* **🐍** Centralizes all your virtual environments, regardless of the backend (currently supports **venv**, **virtualenv**, and **conda**.).
+* **🗂️** Tracks environments in a registry (\~/.config/gvit/envs/).
+* **🔄** Auto-detects and reinstalls changed dependencies on `gvit pull`.
+* **🧹** Cleans up orphaned environments with `gvit envs prune`.
+
+**Why I built it?**
+
+>*One repo, its own environment — without thinking about it.*
+
+I switch between projects constantly and waste time on the same setup steps. I also mix up environments sometimes and projects just don't run.
+
+Wanted something that ""just works"" like `git clone` but for the full environment.
+
+**The repository is the source of truth. Your environment stays synced.**
+
+**Example workflow**
+
+    # Clone and setup in one command
+    gvit clone https://github.com/user/project.git
+    
+    # Pull changes and auto-sync dependencies
+    cd project
+    gvit pull
+    
+    # Manage tracked environments
+    gvit envs list
+    gvit envs prune  # Clean orphaned envs
+
+**Installation**
+
+    pipx install gvit
+    # or
+    pip install gvit
+
+**Links**
+
+* GitHub: [https://github.com/jaimemartinagui/gvit](https://github.com/jaimemartinagui/gvit)
+* PyPI: [https://pypi.org/project/gvit/](https://pypi.org/project/gvit/)
+
+Open to feedback!",2025-10-29T17:14:48.672943
+1oidpl8,https://www.reddit.com/r/Python/comments/1oidpl8/introducing_kanchi_free_open_source_celery/,Introducing Kanchi - Free Open Source Celery Monitoring,imczyber,2025-10-29 00:15:15,43,9,"I just shipped https://kanchi.io - a free open source celery monitoring tool (https://github.com/getkanchi/kanchi)
+
+**What does it do**
+
+Previously, I...","I just shipped https://kanchi.io - a free open source celery monitoring tool (https://github.com/getkanchi/kanchi)
+
+**What does it do**
+
+Previously, I used flower, which most of you probably know. And it worked fine. It lacked some features like Slack webhook integration, retries, orphan detection, and a live mode.
+
+I also wanted a polished, modern look and feel with additional UX enhancements like retrying tasks, hierarchical args and kwargs visualization, and some basic stats about our tasks.
+
+It also stores task metadata in a Postgres (or SQLite) database, so you have historical data even if you restart the instance. It’s still in an early state.
+
+**Comparison to alternatives**
+
+Just like flower, Kanchi is free and open source. You can self-host it on your infra and it’s easy to setup via docker.
+
+Unlike flower, it supports realtime task updates, has a workflow engine (where you can configure triggers, conditions and actions), has a great searching and filtering functionality, supports environment filtering (prod, staging etc) and retrying tasks manually. It has built in orphan task detection and comes with basic stats
+
+**Target Audience**
+
+Since by itself, it is just reading data from your message broker - and it’s working reliably, Kanchi can be used in production.
+
+The next few releases will further target robustness and UX work.​​​​​​​​​​​​​​​​
+
+If anyone is looking for a new celery monitoring experience, this is for you! I’m happy about bug reports and general feedback!",2025-10-29T17:14:48.672968
+1oiwxt5,https://www.reddit.com/r/Python/comments/1oiwxt5/why_doesnt_forloop_have_its_own_scope/,Why doesn't for-loop have it's own scope?,FUS3N,2025-10-29 14:08:00,16,94,"For the longest time I didn't know this but finally decided to ask, I get this is a thing and probably has been asked a lot but i genuinely want to kn...","For the longest time I didn't know this but finally decided to ask, I get this is a thing and probably has been asked a lot but i genuinely want to know... why? What gain is there other than convenience in certain situations, i feel like this could cause more issue than anything even though i can't name them all right now.
+
+I am also designing a language that works very similarly how python works, so maybe i get to learn something here.",2025-10-29T17:14:49.137676
+1oiufp2,https://www.reddit.com/r/Python/comments/1oiufp2/a_new_easy_way_on_windows_to_pip_install_gdal_and/,A new easy way on Windows to pip install GDAL and other tricky geospatial Python packages,pvdp-corbel,2025-10-29 11:41:59,3,0,"# What My Project Does
+
+[geospatial-wheels-index](https://github.com/corbel-spatial/geospatial-wheels-index) is a pip-compatible 
+[simple](https://pac...","# What My Project Does
+
+[geospatial-wheels-index](https://github.com/corbel-spatial/geospatial-wheels-index) is a pip-compatible 
+[simple](https://packaging.python.org/en/latest/specifications/simple-repository-api/) index for the [cgohlke/geospatial-wheels](https://github.com/cgohlke/geospatial-wheels) repository. It's just a few static html files served on GitHub Pages, and all the .whl files are pulled directly from `cgohlke/geospatial-wheels`. All you need to do is add an `index` flag:
+
+```
+pip install --index https://gisidx.github.io/gwi gdal
+```
+
+In addition to GDAL, this index points to the other prebuilt packages in `geospatial-wheels`: cartopy, cftime, fiona, h5py, netcdf4, pygeos, pyogrio, pyproj, rasterio, rtree, and shapely.
+
+Contributions are welcome!
+
+# Target Audience
+
+Mostly folks who straddle the traditional GIS and the developer/data science worlds, the people who would love to run Linux but are stuck on Windows for one reason or another. 
+
+For myself, I'm tired of dealing with the lack of an easy way to install the GDAL binaries on Windows so that I can `pip install gdal`, especially in a `uv` virtual environment or a CI/CD context where using `conda` can be a headache.
+
+# Comparison
+
+Often you'll have to build these packages from source or rely on `conda` or another add-on package manager. For example, the official GDAL docs suggest [various ways](https://gdal.org/en/stable/download.html#windows) to install the binaries. This is often not possible or requires extra work.
+
+The esteemed Christoph Gohlke has been providing prebuilt wheels for GDAL and other packages for a long time, and currently they can be found at his repository, [geospatial-wheels](https://github.com/cgohlke/geospatial-wheels). Awesome! But you have to manually find the one that matches your environment, download it somewhere, and then `pip install` the file... Still pretty annoying and difficult to automate. This index project simplifies the process down to the easy and portable `pip install`.
+
+This project was partly inspired by [gdal-installer](https://pypi.org/project/gdal-installer/) which is also worth checking out.",2025-10-29T17:14:49.137722
+1oiqata,https://www.reddit.com/r/Python/comments/1oiqata/blank_page_paralysis/,Blank page paralysis,Firm-Employment-9253,2025-10-29 08:24:19,0,15,"Hey everyone, 
+I hope you’re doing well, I don’t know if I’m the only one to endure this but every time I open a new script for a new project or just ...","Hey everyone, 
+I hope you’re doing well, I don’t know if I’m the only one to endure this but every time I open a new script for a new project or just a simple script I feel a blank page paralysis not knowing where to start. Frequently I will check Claude just for the start then I continue on my own. So I wanna know if some of you experienced this and if so what have u done to make it better.
+Thank you for your time !",2025-10-29T17:14:49.137772
+1oiq0e4,https://www.reddit.com/r/Python/comments/1oiq0e4/i_made_2_helper_powershell_functions_for_uv/,I made 2 helper powershell functions for uv.,Ok_Sympathy_8561,2025-10-29 08:11:13,0,2,"Obviously this only works for windows. This one publishes to pypi using uv and makes a github release:
+
+        function publish {
+            param(
+...","Obviously this only works for windows. This one publishes to pypi using uv and makes a github release:
+
+        function publish {
+            param(
+                [string] $PyPIToken,
+                [string] $GitHubToken,
+                [string] $GitHubRepo  # e.g. ""Adpros7/easier-openai""
+            )
+        
+            try {
+                Write-Host ""Cleaning build directories..."" -ForegroundColor Yellow
+                if (Test-Path ""dist"") { cmd /c rmdir /s /q dist }
+                if (Test-Path ""build"") { cmd /c rmdir /s /q build }
+        
+                Write-Host ""Building package..."" -ForegroundColor Cyan
+                uv build
+                uv build --wheel
+        
+                Write-Host ""Publishing to PyPI..."" -ForegroundColor Green
+                & cmd /c ""uv publish -t $PyPIToken""
+        
+                # ----------------------------------------
+                # Extract version from pyproject.toml
+                # ----------------------------------------
+                $toml = Get-Content pyproject.toml -Raw
+                if ($toml -match 'version\s*=\s*""(.*?)""') {
+                    $ver = $Matches[1]
+                } else {
+                    throw ""Could not find version in pyproject.toml""
+                }
+        
+                # Handle any version form: x, x.y, or x.y.z
+                $parts = $ver.Split('.')
+                $major = $parts[0]
+                $tagName = ""v$major""
+        
+                Write-Host ""Version found: $ver (Tag: $tagName)"" -ForegroundColor Cyan
+        
+                # ----------------------------------------
+                # Create/push Git tag
+                # ----------------------------------------
+                if (-not (git rev-parse --verify $tagName 2>$null)) {
+                    Write-Host ""Creating git tag $tagName"" -ForegroundColor Yellow
+                    git tag $tagName
+                }
+                Write-Host ""Pushing tag $tagName to origin..."" -ForegroundColor Yellow
+                git push origin $tagName
+        
+                # ----------------------------------------
+                # GitHub release
+                # ----------------------------------------
+                $env:GITHUB_TOKEN = $GitHubToken
+                Write-Host ""Creating or updating GitHub release..."" -ForegroundColor Green
+        
+                # Create release if missing, else upload files
+                $createCmd = ""gh release create $tagName dist/* --repo $GitHubRepo --title $tagName --notes 'Release $ver'""
+                $uploadCmd = ""gh release upload $tagName dist/* --repo $GitHubRepo --clobber""
+        
+                # Run create first
+                & cmd /c $createCmd
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Host ""Release may already exist. Uploading assets..."" -ForegroundColor Yellow
+                    & cmd /c $uploadCmd
+                }
+        
+                Write-Host ""Done. Published $ver to PyPI and GitHub."" -ForegroundColor Green
+            }
+            catch {
+                Write-Host ""Error: $_"" -ForegroundColor Red
+            }
+        }
+
+This one adds packages to your venv from a `requirements.txt` or similar:
+
+    function uvadd {
+        param(
+            [string]$f,
+            [switch]$lock,
+            [Parameter(ValueFromRemainingArguments = $true)]
+            [string[]]$args
+        )
+    
+        if (-not $f) {
+            $f = if ($env:DEFAULT_UVADD_FILE) { 
+                Write-Host ""Using DEFAULT_UVADD_FILE: $env:DEFAULT_UVADD_FILE"" -ForegroundColor Yellow
+                $env:DEFAULT_UVADD_FILE
+            } else {
+                Write-Host ""Defaulting to requirements.txt"" -ForegroundColor Yellow
+                ""requirements.txt""
+            }
+        }
+    
+        if (-not (Test-Path "".venv\Scripts\activate"")) {
+            Write-Host ""No venv found. Creating..."" -ForegroundColor Yellow
+            uv venv; if ($LASTEXITCODE -ne 0) { Write-Host ""uv venv failed"" -ForegroundColor Red; return }
+            uv init;  if ($LASTEXITCODE -ne 0) { Write-Host ""uv init failed"" -ForegroundColor Red; return }
+        }
+    
+        try { .\.venv\Scripts\activate } 
+        catch { Write-Host ""Error activating venv: $($_.Exception.Message)"" -ForegroundColor Red; return }
+    
+        if (-not (Test-Path $f)) { Write-Host ""Missing $f"" -ForegroundColor Red; return }
+        $requirements = Get-Content $f | Where-Object { $_ -and ($_ -notmatch ""^#"") }
+        if (-not $requirements) { Write-Host ""$f is empty."" -ForegroundColor Red; return }
+    
+        if (-not (Test-Path ""pyproject.toml"")) {
+            Write-Host ""Creating pyproject.toml"" -ForegroundColor Yellow
+            @""
+    [project]
+    name = ""temp-project""
+    version = ""0.1.0""
+    authors = [{ name = ""Advik Mathur"", email = ""pranit.advik@gmail.com"" }]
+    ""@ | Out-File ""pyproject.toml"" -Encoding utf8
+        }
+    
+        Write-Host ""Syncing dependencies..."" -ForegroundColor Cyan
+        $depsString = ($requirements | ForEach-Object { ""`""$_`"""" }) -join "", ""
+        $depsLine = ""dependencies = [$depsString]""
+    
+        # Remove old dependencies block
+        $content = Get-Content ""pyproject.toml"" -Raw
+        $content = [regex]::Replace($content, '(?ms)^\s*dependencies\s*=\s*\[.*?\]\s*', '')
+        $lines = $content -split ""`r?`n""
+    
+        # Insert at end of [project]
+        $projStart = ($lines | Select-String '^\[project\]' | Select-Object -First 1)
+        if ($projStart) {
+            $projEnd = ($lines | Select-String '^\[' | Where-Object { $_.LineNumber -gt $projStart.LineNumber } | Select-Object -First 1)
+            if ($projEnd) {
+                $insertAt = $projEnd.LineNumber - 2
+                $before = $lines[0..$insertAt]
+                $after  = $lines[($insertAt + 1)..($lines.Count - 1)]
+                $lines = @($before + $depsLine + $after)
+            } else {
+                $lines += $depsLine
+            }
+        } else {
+            $lines += ""[project]""
+            $lines += $depsLine
+        }
+    
+        try {
+            $lines | Set-Content ""pyproject.toml"" -Encoding utf8
+            Write-Host ""pyproject.toml updated successfully."" -ForegroundColor Green
+        } catch {
+            Write-Host ""Failed to write pyproject.toml: $($_.Exception.Message)"" -ForegroundColor Red
+            return
+        }
+    
+        Write-Host ""Running: uv add -r $f $args"" -ForegroundColor Magenta
+        uv add -r $f @args
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host ""uv add failed ($LASTEXITCODE)"" -ForegroundColor Red
+            return
+        }
+    
+        # Delete lockfile unless --lock flag present
+        if (-not $lock.IsPresent) {
+            if (Test-Path ""uv.lock"") {
+                Remove-Item ""uv.lock"" -Force
+                Write-Host ""uv.lock deleted (use --lock to keep it)"" -ForegroundColor DarkGray
+            }
+        } else {
+            Write-Host ""Keeping uv.lock file (--lock specified)"" -ForegroundColor Yellow
+        }
+    
+        Write-Host ""All dependencies added successfully."" -ForegroundColor Green
+    }
+
+to have this run `notepad $PROFILE`, then paste this in, save, and restart your terminal",2025-10-29T17:14:49.137796
+1oio83q,https://www.reddit.com/r/Python/comments/1oio83q/i_made_a_youtube_to_mp4_converter/,I made a YouTube to mp4 Converter!,Intrepid-Carpet-3005,2025-10-29 06:55:54,0,1,Here is the link to my repo. [https://github.com/Coolythecoder/Youtube-to-mp4](https://github.com/Coolythecoder/Youtube-to-mp4),Here is the link to my repo. [https://github.com/Coolythecoder/Youtube-to-mp4](https://github.com/Coolythecoder/Youtube-to-mp4),2025-10-29T17:14:49.138032
+1oilkc1,https://www.reddit.com/r/Python/comments/1oilkc1/the_http_caching_python_deserves/,The HTTP caching Python deserves,karosis88,2025-10-29 05:09:35,30,10,"# What My Project Does
+
+[Hishel](https://hishel.com/1.0/) is an HTTP caching toolkit for python, which includes **sans-io** caching implementation, **...","# What My Project Does
+
+[Hishel](https://hishel.com/1.0/) is an HTTP caching toolkit for python, which includes **sans-io** caching implementation, **storages** for effectively storing request/response for later use, and integration with your lovely HTTP tool in python such as HTTPX, requests, fastapi, asgi (for any asgi based library), graphql and more!!
+
+Hishel uses **persistent storage** by default, so your cached responses survive program restarts.
+
+After **2 years** and over **63 MILLION pip installs**, I released the first major version with tons of new features to simplify caching.
+
+✨ Help Hishel grow! Give us a [star on GitHub](https://github.com/karpetrosyan/hishel) if you found it useful. ✨
+
+# Use Cases:
+
+HTTP response caching is something you can use **almost everywhere** to:
+
+* Improve the performance of your program
+* Work without an internet connection (offline mode)
+* Save money and stop wasting API calls—make a single request and reuse it many times!
+* Work even when your upstream server goes down
+* Avoid unnecessary downloads when content hasn't changed (what I call ""free caching""—it's completely free and can be configured to always serve the freshest data without re-downloading if nothing changed, like the browser's 304 Not Modified response)
+
+# QuickStart
+
+First, download and install Hishel using pip:
+
+pip: `pip install ""hishel[httpx, requests, fastapi, async]""==1.0.0`
+
+We've installed several integrations just for demonstration—you most likely won't need them all.
+
+    from hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient()
+    
+    # On first run of the program, this will store the response in the cache
+    # On second run, it will retrieve it from the cache
+    response = client.get(""https://hishel.com/"")
+    
+    
+    print(response.extensions[""hishel_from_cache""])  # Additional info about the cache statusfrom hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient()
+    
+    
+    # On first run of the program, this will store the response in the cache
+    # On second run, it will retrieve it from the cache
+    response = client.get(""https://hishel.com/"")
+    
+    
+    print(response.extensions[""hishel_from_cache""])  # Additional info about the cache status
+
+or with requests:
+
+    import requests
+    from hishel.requests import CacheAdapter
+    
+    session = requests.Session()
+    
+    adapter = CacheAdapter()
+    session.mount(""http://"", adapter)
+    session.mount(""https://"", adapter)
+    
+    response = session.get(""https://hishel.com/"")
+    
+    print(response.headers[""x-hishel-from-cache""])
+
+or with fastapi:
+
+    from hishel.asgi import ASGICacheMiddleware
+    from hishel.fastapi import cache
+    
+    app = FastAPI()
+    
+    processed_requests = 0
+    
+    .get(""/items/"", dependencies=[cache(max_age=5)])
+    async def read_item():
+        global processed_requests
+        processed_requests += 1
+        return {""created_at"": time.time(), ""processed_requests"": processed_requests}
+    
+    cached_app = ASGICacheMiddleware(app)
+
+As mentioned before, Hishel has a core system that is entirely independent from any HTTP library, making it easy to integrate with any HTTP client you prefer.
+
+# Caching Policies
+
+**SpecificationPolicy** \- RFC 9111 compliant HTTP caching (default):
+
+    from hishel import CacheOptions, SpecificationPolicy
+    from hishel.httpx import SyncCacheClient
+    
+    client = SyncCacheClient(
+        policy=SpecificationPolicy(
+            cache_options=CacheOptions(
+                shared=False,                              # Use as private cache (browser-like)
+                supported_methods=[""GET"", ""HEAD"", ""POST""], # Cache GET, HEAD, and POST
+                allow_stale=True                           # Allow serving stale responses
+            )
+        )
+    )
+
+**FilterPolicy** \- Custom filtering logic for fine-grained control:
+
+    from hishel import FilterPolicy, BaseFilter, Request
+    from hishel.httpx import AsyncCacheClient
+    
+    class CacheOnlyAPIRequests(BaseFilter[Request]):
+        def needs_body(self) -> bool:
+            return False
+        
+        def apply(self, item: Request, body: bytes | None) -> bool:
+            return ""/api/"" in str(item.url)
+    
+    client = AsyncCacheClient(
+        policy=FilterPolicy(
+            request_filters=[CacheOnlyAPIRequests()] # also filter by body, status and etc.
+        )
+    )
+
+# Storage Backend
+
+Customize the storage backend behavior, set up global TTL (**note that TTL and most settings can also be configured at the per-request level**), choose whether to refresh TTL on access, and much more!
+
+    from hishel import SyncSqliteStorage
+    from hishel.httpx import SyncCacheClient
+    
+    storage = SyncSqliteStorage(
+        database_path=""my_cache.db"",
+        default_ttl=7200.0,           # Cache entries expire after 2 hours
+        refresh_ttl_on_access=True    # Reset TTL when accessing cached entries
+    )
+    
+    client = SyncCacheClient(storage=storage)
+
+# Per-request settings
+
+    from hishel.httpx import SyncCacheClient
+    
+    
+    client = SyncCacheClient()
+    
+    client.get(
+        ""https://hishel.com/"",
+        headers={
+            ""x-hishel-ttl"": ""3600"",  # invalidates cache after 1 hour, even if server says otherwise
+        },
+    )
+    
+    client.post(
+        ""https://some-graphql-endpoint.com/"",
+        json={""query"": ""{ users { id name } }""},
+        headers={""x-hishel-body-key""},  # Include body in cache key
+    )
+    
+    client.get(
+        ""https://hishel.com/"", 
+        headers={""x-hishel-refresh-ttl-on-access"": ""0""}  # do not refresh TTL on access
+    )
+
+# Target Audience
+
+**Backend Developers** \- Building APIs with FastAPI/Django, making repeated HTTP requests to external APIs
+
+**Data Engineers** \- Running ETL pipelines and batch jobs, fetching same data across multiple runs
+
+**CLI Tool Builders** \- Creating command-line tools, need instant responses and offline support
+
+**Web Scrapers** \- Building content crawlers, respect rate limits and need offline testing
+
+**API Library Maintainers** \- Wrapping external APIs (GitHub, Stripe, OpenAI), need transparent caching
+
+**GraphQL Developers** \- Need per-query caching with body-sensitive keys
+
+**Also great for:** DevOps teams, performance-focused companies, enterprise users needing RFC 9111 compliance
+
+⭐ GitHub: [https://github.com/karpetrosyan/hishelWhat](https://github.com/karpetrosyan/hishelWhat)",2025-10-29T17:14:49.138051
+1oihp4r,https://www.reddit.com/r/Python/comments/1oihp4r/plt_is_the_new_matplotlibpyplot/,plt is the new matplotlib.pyplot,borabimbu,2025-10-29 02:42:27,0,19,"If you're bored of typing:
+
+    import matplotlib.pyplot as plt
+
+Simply:
+
+    pip install plt
+
+Then you can just:
+
+    import plt
+
+Then use normally, ...","If you're bored of typing:
+
+    import matplotlib.pyplot as plt
+
+Simply:
+
+    pip install plt
+
+Then you can just:
+
+    import plt
+
+Then use normally, e.g.:
+
+    plt.plot([1, 2, 3], [1, 4, 9])
+    plt.show()
+
+[https://pypi.org/project/plt/](https://pypi.org/project/plt/)  
+[https://github.com/simbamford/plt](https://github.com/simbamford/plt)
+
+* **What My Project Does**
+
+It's a shim for matplotlib.pyplot that exports all contents of matplotlib.pyplot.
+
+* **Target Audience**
+
+Anyone who uses matplotlib.pyplot. It could be used in production.
+
+* **Comparison** 
+
+The state of the art is to type:
+
+    import matplotlib.pyplot as plt
+
+With this project you just:
+
+    import plt
+
+When you're 95, use your less arthritic fingers to type me a thank you.",2025-10-29T17:14:49.138175
+1oigffx,https://www.reddit.com/r/Python/comments/1oigffx/what_is_the_best_computer_or_programming_language/,What is the best computer or programming language to learn the basics then the more advanced stuff?,Tom-CyberBio-1968,2025-10-29 01:55:09,0,21,I have been studying basic programming for years and kind of get the basics if else etc. Still a bit stuck on a lot of the more advanced stuff. As for...,I have been studying basic programming for years and kind of get the basics if else etc. Still a bit stuck on a lot of the more advanced stuff. As for usage I would like to learn basic app programming such as making GUI programs etc. Not thinking of programming games right away but long term goals say in years I might want to give that a try. I would really like to get the skills to make something like a low resource Linux desktop or components of such. I really want to learn C++ but heard Python is easier to learn. What would you recommend?,2025-10-29T17:14:49.138264
+1oig9i0,https://www.reddit.com/r/Python/comments/1oig9i0/gvit_automatic_python_virtual_environment_setup/,gvit - Automatic Python virtual environment setup for every Git repo,Candid-Handle4074,2025-10-29 01:49:02,0,20,"Hey r/Python! 👋
+
+I got tired of doing this every time I cloned a repo:
+
+    git clone repo
+    cd repo
+    python -m venv .venv
+    source .venv/bin/a...","Hey r/Python! 👋
+
+I got tired of doing this every time I cloned a repo:
+
+    git clone repo
+    cd repo
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+
+So I built **gvit** to do it automatically:
+
+`gvit clone repo`
+
+That's it. Environment created, dependencies installed, ready to code. But **gvit** is much more than this!
+
+**What it does?**
+
+* **✅** Automatically creates environments (and install dependencies) when cloning or initializing repositories.
+* **🐍** Centralizes all your virtual environments, regardless of the backend (currently supports **venv**, **virtualenv**, and **conda**.).
+* **🗂️** Tracks environments in a registry (\~/.config/gvit/envs/).
+* **🔄** Auto-detects and reinstalls changed dependencies on `gvit pull`.
+* **🧹** Cleans up orphaned environments with `gvit envs prune`.
+
+**Why I built it?**
+
+>*One repo, its own environment — without thinking about it.*
+
+I switch between projects constantly and waste time on the same setup steps. I also mix up environments sometimes and projects just don't run.
+
+Wanted something that ""just works"" like `git clone` but for the full environment.
+
+**The repository is the source of truth. Your environment stays synced.**
+
+**Example workflow**
+
+    # Clone and setup in one command
+    gvit clone https://github.com/user/project.git
+    
+    # Pull changes and auto-sync dependencies
+    cd project
+    gvit pull
+    
+    # Manage tracked environments
+    gvit envs list
+    gvit envs prune  # Clean orphaned envs
+
+**Installation**
+
+    pipx install gvit
+    # or
+    pip install gvit
+
+**Links**
+
+* GitHub: [https://github.com/jaimemartinagui/gvit](https://github.com/jaimemartinagui/gvit)
+* PyPI: [https://pypi.org/project/gvit/](https://pypi.org/project/gvit/)
+
+Open to feedback!",2025-10-29T17:14:49.138285
+1oidpl8,https://www.reddit.com/r/Python/comments/1oidpl8/introducing_kanchi_free_open_source_celery/,Introducing Kanchi - Free Open Source Celery Monitoring,imczyber,2025-10-29 00:15:15,46,9,"I just shipped https://kanchi.io - a free open source celery monitoring tool (https://github.com/getkanchi/kanchi)
+
+**What does it do**
+
+Previously, I...","I just shipped https://kanchi.io - a free open source celery monitoring tool (https://github.com/getkanchi/kanchi)
+
+**What does it do**
+
+Previously, I used flower, which most of you probably know. And it worked fine. It lacked some features like Slack webhook integration, retries, orphan detection, and a live mode.
+
+I also wanted a polished, modern look and feel with additional UX enhancements like retrying tasks, hierarchical args and kwargs visualization, and some basic stats about our tasks.
+
+It also stores task metadata in a Postgres (or SQLite) database, so you have historical data even if you restart the instance. It’s still in an early state.
+
+**Comparison to alternatives**
+
+Just like flower, Kanchi is free and open source. You can self-host it on your infra and it’s easy to setup via docker.
+
+Unlike flower, it supports realtime task updates, has a workflow engine (where you can configure triggers, conditions and actions), has a great searching and filtering functionality, supports environment filtering (prod, staging etc) and retrying tasks manually. It has built in orphan task detection and comes with basic stats
+
+**Target Audience**
+
+Since by itself, it is just reading data from your message broker - and it’s working reliably, Kanchi can be used in production.
+
+The next few releases will further target robustness and UX work.​​​​​​​​​​​​​​​​
+
+If anyone is looking for a new celery monitoring experience, this is for you! I’m happy about bug reports and general feedback!",2025-10-29T17:14:49.138329
