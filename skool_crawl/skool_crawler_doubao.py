@@ -526,6 +526,39 @@ def run(args):
     with open(args.summary_out, "w", encoding="utf-8") as f:
         json.dump(summary_obj, f, ensure_ascii=False, indent=2)
     print(f"[run] 已保存综合摘要到 {args.summary_out}")
+    from textwrap import dedent
+
+    md_path = args.summary_out.replace(".json", ".md")
+
+    markdown_text = dedent(f"""
+    # 🧭 Skool 社群摘要：{args.group}
+    生成时间：{summary_obj['generated_at']}
+
+    ---
+
+    ## 摘要
+    {summary_obj['summary']}
+
+    ---
+
+    ## 原始数据
+    - 帖子数量：{len(posts)}
+    - 来源数据库：{args.output_db or '无'}
+    - Doubao 模型：{args.model}
+    """)
+
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(markdown_text)
+
+    print(f"[run] 已保存 Markdown 摘要到 {md_path}")
+
+    # 易老师要求2：保存为 Word 文件
+    import pypandoc
+
+    docx_path = args.summary_out.replace(".json", ".docx")
+    pypandoc.download_pandoc()
+    pypandoc.convert_text(markdown_text, "docx", format="md", outputfile=docx_path, extra_args=["--standalone"])
+    print(f"[run] 已保存 Word 文件到 {docx_path}")
     # 打印预览
     preview = summary_text[:3000] if summary_text else ""
     print("---- 豆包摘要预览（最多3000字符） ----")

@@ -13739,3 +13739,704 @@ github repo: [https://github.com/NaturalCapsule/Kryypto](https://github.com/Natu
 
   
 website: [https://naturalcapsule.github.io/Kryypto/](https://naturalcapsule.github.io/Kryypto/)",2025-10-21T10:40:14.183043
+1ocucv4,https://www.reddit.com/r/Python/comments/1ocucv4/is_my_code_horrible/,Is my code horrible,TheDrayn0001,2025-10-22 08:51:59,0,15,"import random
+    
+    
+    wordle_list = [
+        ""APPLE"", ""BRAVE"", ""CRANE"", ""DREAM"", ""FLUTE"", ""GRACE"", ""HOUSE"", ""JUMPS"",
+        ""KNIFE"", ""LIGHT"", ...","import random
+    
+    
+    wordle_list = [
+        ""APPLE"", ""BRAVE"", ""CRANE"", ""DREAM"", ""FLUTE"", ""GRACE"", ""HOUSE"", ""JUMPS"",
+        ""KNIFE"", ""LIGHT"", ""MOUSE"", ""NIGHT"", ""OCEAN"", ""PLANT"", ""QUICK"", ""ROBIN"",
+        ""SHINE"", ""TIGER"", ""UNITY"", ""VIVID"", ""WORST"", ""YOUTH"", ""ZEBRA"", ""ALARM"",
+        ""BREAD"", ""CLOUD"", ""DRIVE"", ""FROST"", ""GLASS"", ""HEART"", ""INDEX"", ""JUICE"",
+        ""KNOCK"", ""LEMON"", ""MAGIC"", ""NOBLE"", ""OPERA"", ""PEACH"", ""QUEST"", ""RIVER"",
+        ""SHEET"", ""TREND"", ""UNDER"", ""VIRUS"", ""WAGON"", ""YEAST"", ""ZONAL"", ""ANGEL"",
+        ""BASIC"", ""CHAIR"", ""DELTA"", ""FANCY"", ""GIANT"", ""HONEY"", ""IMAGE"", ""JOLLY"",
+        ""KINGS"", ""LEAFY"", ""MIRTH"", ""NOVEL"", ""ORBIT"", ""PRIZE"", ""QUILT"", ""RANGE"",
+        ""SUGAR"", ""TRAIL"", ""URBAN"", ""VOTER"", ""WORRY"", ""YACHT"", ""ZESTY"", ""ADULT"",
+        ""BLEND"", ""CROWN"", ""DEPTH"", ""FAITH"", ""GRAND"", ""HUMAN"", ""INPUT"", ""JOKER"",
+        ""KNEEL"", ""LUNCH"", ""MOTOR"", ""NURSE"", ""OFFER"", ""PILOT"", ""QUIET"", ""REACH"",
+        ""SHARE"", ""THINK"", ""UPPER"", ""VOICE"", ""WASTE"", ""YIELD"", ""ZONED"", ""ABOVE"",
+        ""BIRTH"", ""CABLE"", ""DEMON"", ""FLOOD""
+    ]
+    total_words = len(wordle_list) - 1
+    score = 0
+    number = random.randint(0, total_words)
+    choice = wordle_list[number]
+    
+    
+    for i in range(10):
+        number = random.randint(0, total_words)
+        choice = wordle_list[number]
+        for i in range(10):
+         # Automatically puta the input in uppercase
+            raw_guess = input(""guess the word: "")
+            guess = raw_guess.upper()
+            print(""Your guess is"", guess)
+    
+    
+    # Checks if the guess is five letters
+            if len(guess) == 5:
+                if str(choice) == str(guess):
+                    print(guess[0], ""is correct"")
+                    print(guess[1], ""is correct"")
+                    print(guess[2], ""is correct"")
+                    print(guess[3], ""is correct"")
+                    print(guess[4], ""is correct"")
+                    score += 1
+                    print(""Current Score is "", score)
+                    break
+    
+    
+    # Wanted to make it analyse each letter and give feedback
+    # I am convinced that I can shorten this part
+    # Also wanted to make it so that it tells you if the letter is elsewhere
+                else:
+                    if str(choice[0]) == str(guess[0]):
+                        print(guess[0], ""is correct"")
+                    else:
+                        print(guess[0], ""is incorrect"")
+    
+    
+                    if str(choice[1]) == str(guess[1]):
+                        print(guess[1], ""is correct"")
+                    else:
+                        print(guess[1], ""is incorrect"")
+    
+    
+                    if str(choice[2]) == str(guess[2]):
+                        print(guess[2], ""is correct"")
+                    else:
+                        print(guess[2], ""is incorrect"")
+    
+    
+                    if str(choice[3]) == str(guess[3]):
+                        print(guess[3], ""is correct"")
+                    else:
+                        print(guess[3], ""is incorrect"")
+    
+    
+                    if str(choice[4]) == str(guess[4]):
+                        print(guess[4], ""is correct"")
+                    else:
+                        print(guess[4], ""is incorrect"")
+            else:
+                print(""Word needs to be 5 letters"")
+    print(""Final Score is"", score, ""Over 10"")",2025-10-22T15:07:13.386722
+1ocq03z,https://www.reddit.com/r/Python/comments/1ocq03z/hi_introducing_python_cli_tool_called_evilwaf/,"Hi introducing python, CLI Tool called evilwaf most powerful firewall bypass V2.2 was released",Tricky-Frosting9047,2025-10-22 05:42:39,0,5,"Now evilwaf supports more than 11 firewall bypass techniques includes 
+
+Critical risk: Direct Exploitation
+  • HTTP Request Smuggling
+  •JWT Algorithm...","Now evilwaf supports more than 11 firewall bypass techniques includes 
+
+Critical risk: Direct Exploitation
+  • HTTP Request Smuggling
+  •JWT Algorithm Confusion
+  •HTTP/2 Stream Multiplexing
+  •WebAssembly Memory Corruption
+  •cache poisoning
+  •web cache poisoning
+
+  High risk: Potential Exploitation
+  •SSTI Polyglot Payloads
+  •gRPC/Protobuf Bypass
+  •GraphQL Query Batching
+  °ML WAF Evasion
+
+  Medium risk: Information Gathering
+  ° Subdomain Discovery
+  ° DNS History Bypass
+  ° Header Manipulation
+  ° Advanced Protocol Attacks
+
+For more info visit GitHub repo: https://github.com/matrixleons/evilwaf",2025-10-22T15:07:13.386932
+1ocib9b,https://www.reddit.com/r/Python/comments/1ocib9b/i_created_a_riot_api_library_for_python/,I created a Riot API library for python,Electrical-Lab-5952,2025-10-22 00:55:00,2,9,"Hello all,
+
+I've been working on a super simple api wrapper for league of legends and would love some feedback.
+
+[https://github.com/diodemusic/pyke](...","Hello all,
+
+I've been working on a super simple api wrapper for league of legends and would love some feedback.
+
+[https://github.com/diodemusic/pyke](https://github.com/diodemusic/pyke)
+
+Thanks :)",2025-10-22T15:07:13.387006
+1ochltx,https://www.reddit.com/r/Python/comments/1ochltx/ids_project_in_python/,IDS Project in Python,Javi_16018,2025-10-22 00:28:08,3,0,"Hello everyone,
+
+
+
+I recently uploaded a repository to GitHub where I created an IDS in Python. I would appreciate any feedback and suggestions for im...","Hello everyone,
+
+
+
+I recently uploaded a repository to GitHub where I created an IDS in Python. I would appreciate any feedback and suggestions for improvement.
+
+[https://github.com/javisys/IDS-Python](https://github.com/javisys/IDS-Python)
+
+Thank you very much, best regards.",2025-10-22T15:07:13.387044
+1ocgcqh,https://www.reddit.com/r/Python/comments/1ocgcqh/new_uv_gitlab_component/,New UV Gitlab Component,MaKaNuReddit,2025-10-21 23:41:07,1,0,"I tried today to recreate a GitHub action which provides a python \`uv setup as a GitLab CI component.
+
+# What this Component achieves
+
+While the docu...","I tried today to recreate a GitHub action which provides a python \`uv setup as a GitLab CI component.
+
+# What this Component achieves
+
+While the documentation of UV already explains how to implement `uv` inside of GitLab CI, it still fills the `.gitlab-ci.yml` quite a bit.
+
+My Component tries to minimize that, by also providing a lot of customizations.
+
+# Examples
+
+The following example demonstrates how to implement the component on gitlab.com:
+
+    include:
+      - component: $CI_SERVER_FQDN/gitlab-uv-templates/python-uv-component/python-uv@1.0.0
+    
+    single-test:
+      extends: .python-uv-setup
+      stage: test
+      script:
+        - uv run python -c ""print('Hello UV!')""
+
+The next examples demonstrate how to achieve parallel matrix execution:
+
+    include:
+      - component: $CI_SERVER_FQDN/gitlab-uv-templates/python-uv-component/python-uv@1.0.0
+        inputs:
+          python_version: $PYTHON_V
+          uv_version: 0.9.4
+          base_layer: bookworm-slim
+    
+    matrix-test:
+      extends: .python-uv-setup
+      stage: test
+      parallel:
+        matrix:
+          - PYTHON_V: [""3.12"", ""3.11"", ""3.10""]
+      script:
+        - uv run python --version""
+      variables:
+        PYTHON_V: $PYTHON_V
+
+# Comparison
+
+I am not aware of any public component which achieves similar as demonstrated above.
+
+I am quite happy about the current result, which I published via the GitLab CI/CD catalogue:
+
+[https://gitlab.com/explore/catalog/gitlab-uv-templates/python-uv-component](https://gitlab.com/explore/catalog/gitlab-uv-templates/python-uv-component)",2025-10-22T15:07:13.387082
+1ocg3p5,https://www.reddit.com/r/Python/comments/1ocg3p5/python_pest_a_port_of_rusts_pest/,Python Pest - A port of Rust's pest,Hefty-Pianist-1958,2025-10-21 23:31:24,7,0,"I recently released Python Pest, a port of the Rust pest parsing library.
+
+# What My Project Does
+
+Python Pest is a declarative PEG parser generator f...","I recently released Python Pest, a port of the Rust pest parsing library.
+
+# What My Project Does
+
+Python Pest is a declarative PEG parser generator for Python, ported from Rust's Pest. You write grammars instead of hand-coding parsing logic, and it builds parse trees automatically.
+
+Define a grammar using Pest version 2 syntax, like this:
+
+    jsonpath        = _{ SOI ~ jsonpath_query ~ EOI }
+    jsonpath_query  = _{ root_identifier ~ segments }
+    segments        = _{ (S ~ segment)* }
+    root_identifier = _{ ""$"" }
+    
+    segment = _{
+      | child_segment
+      | descendant_segment
+    }
+    
+    // snip
+
+And traverse parse trees using [structural pattern matching](https://peps.python.org/pep-0636/), like this:
+
+    def parse_segment(self, segment: Pair) -> Segment:
+        match segment:
+            case Pair(Rule.CHILD_SEGMENT, [inner]):
+                return ChildSegment(segment, self.parse_segment_inner(inner))
+            case Pair(Rule.DESCENDANT_SEGMENT, [inner]):
+                return RecursiveDescentSegment(segment, self.parse_segment_inner(inner))
+            case Pair(Rule.NAME_SEGMENT, [inner]) | Pair(Rule.INDEX_SEGMENT, [inner]):
+                return ChildSegment(segment, [self.parse_selector(inner)])
+            case _:
+                raise JSONPathSyntaxError(""expected a segment"", segment)
+
+See [docs](https://jg-rp.github.io/python-pest/), [GitHub](https://github.com/jg-rp/python-pest) and [PyPi](https://pypi.org/project/python-pest/) for a complete example.
+
+# Target Audience
+
+* Python developers who need to parse custom languages, data formats, or DSLs.
+* Anyone interested in grammar-first design over hand-coded parsers.
+* Developers curious about leveraging Python's match/case for tree-walking.
+
+# Comparison
+
+Parsimonious is another general purpose, pure Python parser package that reads parsing expression grammars. Python Pest differs in grammar syntax and subsequent tree traversal technique, preferring external iteration of parse trees instead of defining a visitor.
+
+# Feedback
+
+I'd appreciate any feedback, especially your thoughts on the trade-off between declarative grammars and performance in Python. Does the clarity and maintainability make up for slower execution compared to hand-tuned parsers?
+
+GitHub: [https://github.com/jg-rp/python-pest](https://github.com/jg-rp/python-pest)",2025-10-22T15:07:13.388617
+1ocdw2j,https://www.reddit.com/r/Python/comments/1ocdw2j/gui_toolkit_slint_114_released_with_universal/,"GUI Toolkit Slint 1.14 released with universal transforms, asyncio and a unified text engine",slint-ui,2025-10-21 22:05:25,3,1,"We’re proud to release [\#Slint](https://chat.slint.dev/public/channels/docs-internal#) 1.14 💙 with universal transforms 🌀, [\#Python](https://chat.sl...","We’re proud to release [\#Slint](https://chat.slint.dev/public/channels/docs-internal#) 1.14 💙 with universal transforms 🌀, [\#Python](https://chat.slint.dev/public/channels/docs-internal#) asyncio 🐍, and a unified text engine with fontique and parley 🖋️  
+Read more about it in the blog here 👉 [https://slint.dev/blog/slint-1.14-released](https://slint.dev/blog/slint-1.14-released)",2025-10-22T15:07:13.388772
+1ocd9i4,https://www.reddit.com/r/Python/comments/1ocd9i4/advice_for_a_javascripttypescript_dev_getting/,Advice for a Javascript/Typescript dev getting into the python ecosystem,Lupexlol,2025-10-21 21:40:36,0,9,"I'm a typescript dev that worked with frontend frameworks and nodejs for the last 10 years.
+
+I just joined a startup and I'm required to build a serve...","I'm a typescript dev that worked with frontend frameworks and nodejs for the last 10 years.
+
+I just joined a startup and I'm required to build a serverless rest api with a python based stack.
+
+The problem is that I have around a few days to figure out what's considered industry standard currently for the python ecosystem, and I can't afford to take any wrong turns here.
+
+Of course the particularities of the project might affect your answer to some degree and I'm aware of that, but for the sake of trying to point me to the right direction let's try to make the best out of this.
+
+I would make some typescript analogies in order for you to better understand what I'm aiming at with the stack.
+
+1.ORM - drizzle (will use postgres)
+2.Deployment - vercel/fallback to aws lambda
+3.Package manager - pnpm
+4.Types - typescript
+
+The most uncertainities I have are about the platform where I have to deploy this(I really want something that is serverless and has good DX), vercel is such a no brainer rn for typescript projects, and I wonder if I have similar no brainers in python as well.
+
+I have read about modal for deploying FastAPI, but again I'm not sure.
+
+Really appreciate anyone taking time to answer this.",2025-10-22T15:07:13.388831
+1occzel,https://www.reddit.com/r/Python/comments/1occzel/namedtuples_are_a_pita/,NamedTuples are a PITA,JuroOravec,2025-10-21 21:28:58,0,16,I've also created a thread for this on Python forum - [see here](https://discuss.python.org/t/allow-to-pass-defaults-when-defining-namedtuple-dynamica...,"I've also created a thread for this on Python forum - [see here](https://discuss.python.org/t/allow-to-pass-defaults-when-defining-namedtuple-dynamically/104484).
+
+TL;DR - When defining NamedTuples dynamically, there should be a single interface that'd allow to pass all 3 - field names, annotations, and defaults.
+
+I needed to convert to convert normal Python classes into NamedTuples. (see final implementation [here](https://github.com/django-components/django-components/pull/1466#discussion_r2447261223))
+
+❌ For normal classes, you could simply make a new class that subclasses from both.
+
+    class X(MyClass, NamedTuple):
+        pass
+
+But NamedTuples don't support that.
+
+❌ And you can't further subclass the subclass of `NamedTuples`:
+
+    class Another(NamedTuple):
+        x: int = 1
+    
+    class X(Another):
+        y: str
+
+❌ When using `typing.NamedTuple` as a function, you can't pass in defaults:
+
+    my_class = typing.NamedTuple(""MyClass"", [(""x"", int), (""y"", str)])
+
+I tried setting the defaults ([`_field_defaults`](https://docs.python.org/3/library/collections.html#collections.somenamedtuple._field_defaults)) manually, but Python wasn't picking that up.
+
+❌ One option was to define the NamedTuple with a class syntax as a string, and then evaluate that string. But that had 2 problems - 1) security risk, and 2) we'd need to import all the types used in annotations:
+
+    my_cls_str = """"""
+    from typing import NamedTuple
+    
+    from path.to.custom import CustomClass
+    
+    class MyClass(NamedTuple):
+        x: int
+        y: str
+        z: CustomClass
+    """"""
+    my_cls = eval(my_cls_str, {}, {})
+
+✅ Lastly I managed to get it working using `collections.namedtuple`. This function doesn't define the field annotations, but it is able to handle defaults. Just one annoying thing was how it sets defaults the same way as Python functions do - it assigns the defaults from the back of the function signature.
+
+So if I have NamedTuple with 3 fields - `x`, `y`, and `z`, and I set defaults to `[""hello"", 123]`:
+
+    my_cls = namedtuple(""MyClass"", [""x"", ""y"", ""z""], defaults=[""hello"", 123])
+
+then this is the same as writing:
+
+    class MyClass(NamedTuple):
+        x: int
+        y: str = ""hello""
+        z: int = 123
+
+One caveat is that `collections.namedtuple()` doesn't set the annotations, so I had also set `__annotations__` at the end.
+
+One thing I didn't know - when defining `NamedTuple`, the fields it recognizes are only those that are annotated. If a field is NOT annotated, it's treated as a CLASS VARIABLE:
+
+    class MyClass(NamedTuple):
+        x: int            # Required field
+        y: str = ""hello""  # Optional field (with default)
+        z = 123           # Class var!
+
+So at the end I also assigned the class variables to the new namedtuple class.
+
+Surprisingly LLMs were really bad at solving this, so I'm hoping this comment gets into the next training set.",2025-10-22T15:07:13.388907
+1occonw,https://www.reddit.com/r/Python/comments/1occonw/tstrings_pythons_fifth_string_formatting_technique/,T-Strings: Python's Fifth String Formatting Technique?,treyhunner,2025-10-21 21:16:36,166,52,"Every time I've talked about Python 3.14's new t-strings online, many folks have been confused about how t-strings are different from f-strings, why t...","Every time I've talked about Python 3.14's new t-strings online, many folks have been confused about how t-strings are different from f-strings, why t-strings are useful, and whether t-strings are a replacement for f-strings.
+
+  
+I published [a short article (and video) on Python 3.14's new t-strings](https://pym.dev/t-strings-in-python/) that's meant to explain this.
+
+The TL;DR:
+
+* Python has had 4 string formatting approaches before t-strings
+* T-strings are different because they *don't actually return strings*
+* T-strings are useful for library authors who need the disassembled parts of a string interpolation for the purpose of pre-processing interpolations
+* T-strings definitely do not replace f-strings: keep using f-strings until specific libraries tell you to use a t-string with one or more of their utilities
+
+Watch the video or read the article for a short demo and a library that uses them as well.
+
+If you've been confusing about t-strings, I hope this explanation helps.",2025-10-22T15:07:13.389268
+1ocucv4,https://www.reddit.com/r/Python/comments/1ocucv4/is_my_code_horrible/,Is my code horrible,TheDrayn0001,2025-10-22 08:51:59,0,15,"    import random
+    
+    
+    wordle_list = [
+        ""APPLE"", ""BRAVE"", ""CRANE"", ""DREAM"", ""FLUTE"", ""GRACE"", ""HOUSE"", ""JUMPS"",
+        ""KNIFE"", ""LIGH...","import random
+    
+    
+    wordle_list = [
+        ""APPLE"", ""BRAVE"", ""CRANE"", ""DREAM"", ""FLUTE"", ""GRACE"", ""HOUSE"", ""JUMPS"",
+        ""KNIFE"", ""LIGHT"", ""MOUSE"", ""NIGHT"", ""OCEAN"", ""PLANT"", ""QUICK"", ""ROBIN"",
+        ""SHINE"", ""TIGER"", ""UNITY"", ""VIVID"", ""WORST"", ""YOUTH"", ""ZEBRA"", ""ALARM"",
+        ""BREAD"", ""CLOUD"", ""DRIVE"", ""FROST"", ""GLASS"", ""HEART"", ""INDEX"", ""JUICE"",
+        ""KNOCK"", ""LEMON"", ""MAGIC"", ""NOBLE"", ""OPERA"", ""PEACH"", ""QUEST"", ""RIVER"",
+        ""SHEET"", ""TREND"", ""UNDER"", ""VIRUS"", ""WAGON"", ""YEAST"", ""ZONAL"", ""ANGEL"",
+        ""BASIC"", ""CHAIR"", ""DELTA"", ""FANCY"", ""GIANT"", ""HONEY"", ""IMAGE"", ""JOLLY"",
+        ""KINGS"", ""LEAFY"", ""MIRTH"", ""NOVEL"", ""ORBIT"", ""PRIZE"", ""QUILT"", ""RANGE"",
+        ""SUGAR"", ""TRAIL"", ""URBAN"", ""VOTER"", ""WORRY"", ""YACHT"", ""ZESTY"", ""ADULT"",
+        ""BLEND"", ""CROWN"", ""DEPTH"", ""FAITH"", ""GRAND"", ""HUMAN"", ""INPUT"", ""JOKER"",
+        ""KNEEL"", ""LUNCH"", ""MOTOR"", ""NURSE"", ""OFFER"", ""PILOT"", ""QUIET"", ""REACH"",
+        ""SHARE"", ""THINK"", ""UPPER"", ""VOICE"", ""WASTE"", ""YIELD"", ""ZONED"", ""ABOVE"",
+        ""BIRTH"", ""CABLE"", ""DEMON"", ""FLOOD""
+    ]
+    total_words = len(wordle_list) - 1
+    score = 0
+    number = random.randint(0, total_words)
+    choice = wordle_list[number]
+    
+    
+    for i in range(10):
+        number = random.randint(0, total_words)
+        choice = wordle_list[number]
+        for i in range(10):
+         # Automatically puta the input in uppercase
+            raw_guess = input(""guess the word: "")
+            guess = raw_guess.upper()
+            print(""Your guess is"", guess)
+    
+    
+    # Checks if the guess is five letters
+            if len(guess) == 5:
+                if str(choice) == str(guess):
+                    print(guess[0], ""is correct"")
+                    print(guess[1], ""is correct"")
+                    print(guess[2], ""is correct"")
+                    print(guess[3], ""is correct"")
+                    print(guess[4], ""is correct"")
+                    score += 1
+                    print(""Current Score is "", score)
+                    break
+    
+    
+    # Wanted to make it analyse each letter and give feedback
+    # I am convinced that I can shorten this part
+    # Also wanted to make it so that it tells you if the letter is elsewhere
+                else:
+                    if str(choice[0]) == str(guess[0]):
+                        print(guess[0], ""is correct"")
+                    else:
+                        print(guess[0], ""is incorrect"")
+    
+    
+                    if str(choice[1]) == str(guess[1]):
+                        print(guess[1], ""is correct"")
+                    else:
+                        print(guess[1], ""is incorrect"")
+    
+    
+                    if str(choice[2]) == str(guess[2]):
+                        print(guess[2], ""is correct"")
+                    else:
+                        print(guess[2], ""is incorrect"")
+    
+    
+                    if str(choice[3]) == str(guess[3]):
+                        print(guess[3], ""is correct"")
+                    else:
+                        print(guess[3], ""is incorrect"")
+    
+    
+                    if str(choice[4]) == str(guess[4]):
+                        print(guess[4], ""is correct"")
+                    else:
+                        print(guess[4], ""is incorrect"")
+            else:
+                print(""Word needs to be 5 letters"")
+    print(""Final Score is"", score, ""Over 10"")",2025-10-22T15:07:19.932218
+1ocq03z,https://www.reddit.com/r/Python/comments/1ocq03z/hi_introducing_python_cli_tool_called_evilwaf/,"Hi introducing python, CLI Tool called evilwaf most powerful firewall bypass V2.2 was released",Tricky-Frosting9047,2025-10-22 05:42:39,0,5,"
+
+
+Now evilwaf supports more than 11 firewall bypass techniques includes 
+
+Critical risk: Direct Exploitation
+  • HTTP Request Smuggling
+  •JWT Algori...","Now evilwaf supports more than 11 firewall bypass techniques includes 
+
+Critical risk: Direct Exploitation
+  • HTTP Request Smuggling
+  •JWT Algorithm Confusion
+  •HTTP/2 Stream Multiplexing
+  •WebAssembly Memory Corruption
+  •cache poisoning
+  •web cache poisoning
+
+  High risk: Potential Exploitation
+  •SSTI Polyglot Payloads
+  •gRPC/Protobuf Bypass
+  •GraphQL Query Batching
+  °ML WAF Evasion
+
+  Medium risk: Information Gathering
+  ° Subdomain Discovery
+  ° DNS History Bypass
+  ° Header Manipulation
+  ° Advanced Protocol Attacks
+
+For more info visit GitHub repo: https://github.com/matrixleons/evilwaf",2025-10-22T15:07:19.932369
+1ocib9b,https://www.reddit.com/r/Python/comments/1ocib9b/i_created_a_riot_api_library_for_python/,I created a Riot API library for python,Electrical-Lab-5952,2025-10-22 00:55:00,5,9,"Hello all,
+
+I've been working on a super simple api wrapper for league of legends and would love some feedback.
+
+[https://github.com/diodemusic/pyke](...","Hello all,
+
+I've been working on a super simple api wrapper for league of legends and would love some feedback.
+
+[https://github.com/diodemusic/pyke](https://github.com/diodemusic/pyke)
+
+Thanks :)",2025-10-22T15:07:19.932410
+1ochltx,https://www.reddit.com/r/Python/comments/1ochltx/ids_project_in_python/,IDS Project in Python,Javi_16018,2025-10-22 00:28:08,3,0,"Hello everyone,
+
+
+
+I recently uploaded a repository to GitHub where I created an IDS in Python. I would appreciate any feedback and suggestions for im...","Hello everyone,
+
+
+
+I recently uploaded a repository to GitHub where I created an IDS in Python. I would appreciate any feedback and suggestions for improvement.
+
+[https://github.com/javisys/IDS-Python](https://github.com/javisys/IDS-Python)
+
+Thank you very much, best regards.",2025-10-22T15:07:19.932432
+1ocgcqh,https://www.reddit.com/r/Python/comments/1ocgcqh/new_uv_gitlab_component/,New UV Gitlab Component,MaKaNuReddit,2025-10-21 23:41:07,1,0,"I tried today to recreate a GitHub action which provides a python \`uv setup as a GitLab CI component.
+
+# What this Component achieves
+
+While the docu...","I tried today to recreate a GitHub action which provides a python \`uv setup as a GitLab CI component.
+
+# What this Component achieves
+
+While the documentation of UV already explains how to implement `uv` inside of GitLab CI, it still fills the `.gitlab-ci.yml` quite a bit.
+
+My Component tries to minimize that, by also providing a lot of customizations.
+
+# Examples
+
+The following example demonstrates how to implement the component on gitlab.com:
+
+    include:
+      - component: $CI_SERVER_FQDN/gitlab-uv-templates/python-uv-component/python-uv@1.0.0
+    
+    single-test:
+      extends: .python-uv-setup
+      stage: test
+      script:
+        - uv run python -c ""print('Hello UV!')""
+
+The next examples demonstrate how to achieve parallel matrix execution:
+
+    include:
+      - component: $CI_SERVER_FQDN/gitlab-uv-templates/python-uv-component/python-uv@1.0.0
+        inputs:
+          python_version: $PYTHON_V
+          uv_version: 0.9.4
+          base_layer: bookworm-slim
+    
+    matrix-test:
+      extends: .python-uv-setup
+      stage: test
+      parallel:
+        matrix:
+          - PYTHON_V: [""3.12"", ""3.11"", ""3.10""]
+      script:
+        - uv run python --version""
+      variables:
+        PYTHON_V: $PYTHON_V
+
+# Comparison
+
+I am not aware of any public component which achieves similar as demonstrated above.
+
+I am quite happy about the current result, which I published via the GitLab CI/CD catalogue:
+
+[https://gitlab.com/explore/catalog/gitlab-uv-templates/python-uv-component](https://gitlab.com/explore/catalog/gitlab-uv-templates/python-uv-component)",2025-10-22T15:07:19.932453
+1ocg3p5,https://www.reddit.com/r/Python/comments/1ocg3p5/python_pest_a_port_of_rusts_pest/,Python Pest - A port of Rust's pest,Hefty-Pianist-1958,2025-10-21 23:31:24,7,0,"I recently released Python Pest, a port of the Rust pest parsing library.
+
+# What My Project Does
+
+Python Pest is a declarative PEG parser generator f...","I recently released Python Pest, a port of the Rust pest parsing library.
+
+# What My Project Does
+
+Python Pest is a declarative PEG parser generator for Python, ported from Rust's Pest. You write grammars instead of hand-coding parsing logic, and it builds parse trees automatically.
+
+Define a grammar using Pest version 2 syntax, like this:
+
+    jsonpath        = _{ SOI ~ jsonpath_query ~ EOI }
+    jsonpath_query  = _{ root_identifier ~ segments }
+    segments        = _{ (S ~ segment)* }
+    root_identifier = _{ ""$"" }
+    
+    segment = _{
+      | child_segment
+      | descendant_segment
+    }
+    
+    // snip
+
+And traverse parse trees using [structural pattern matching](https://peps.python.org/pep-0636/), like this:
+
+    def parse_segment(self, segment: Pair) -> Segment:
+        match segment:
+            case Pair(Rule.CHILD_SEGMENT, [inner]):
+                return ChildSegment(segment, self.parse_segment_inner(inner))
+            case Pair(Rule.DESCENDANT_SEGMENT, [inner]):
+                return RecursiveDescentSegment(segment, self.parse_segment_inner(inner))
+            case Pair(Rule.NAME_SEGMENT, [inner]) | Pair(Rule.INDEX_SEGMENT, [inner]):
+                return ChildSegment(segment, [self.parse_selector(inner)])
+            case _:
+                raise JSONPathSyntaxError(""expected a segment"", segment)
+
+See [docs](https://jg-rp.github.io/python-pest/), [GitHub](https://github.com/jg-rp/python-pest) and [PyPi](https://pypi.org/project/python-pest/) for a complete example.
+
+# Target Audience
+
+* Python developers who need to parse custom languages, data formats, or DSLs.
+* Anyone interested in grammar-first design over hand-coded parsers.
+* Developers curious about leveraging Python's match/case for tree-walking.
+
+# Comparison
+
+Parsimonious is another general purpose, pure Python parser package that reads parsing expression grammars. Python Pest differs in grammar syntax and subsequent tree traversal technique, preferring external iteration of parse trees instead of defining a visitor.
+
+# Feedback
+
+I'd appreciate any feedback, especially your thoughts on the trade-off between declarative grammars and performance in Python. Does the clarity and maintainability make up for slower execution compared to hand-tuned parsers?
+
+GitHub: [https://github.com/jg-rp/python-pest](https://github.com/jg-rp/python-pest)",2025-10-22T15:07:19.932736
+1ocdw2j,https://www.reddit.com/r/Python/comments/1ocdw2j/gui_toolkit_slint_114_released_with_universal/,"GUI Toolkit Slint 1.14 released with universal transforms, asyncio and a unified text engine",slint-ui,2025-10-21 22:05:25,5,1,"We’re proud to release [\#Slint](https://chat.slint.dev/public/channels/docs-internal#) 1.14 💙 with universal transforms 🌀, [\#Python](https://chat.sl...","We’re proud to release [\#Slint](https://chat.slint.dev/public/channels/docs-internal#) 1.14 💙 with universal transforms 🌀, [\#Python](https://chat.slint.dev/public/channels/docs-internal#) asyncio 🐍, and a unified text engine with fontique and parley 🖋️  
+Read more about it in the blog here 👉 [https://slint.dev/blog/slint-1.14-released](https://slint.dev/blog/slint-1.14-released)",2025-10-22T15:07:19.932819
+1ocd9i4,https://www.reddit.com/r/Python/comments/1ocd9i4/advice_for_a_javascripttypescript_dev_getting/,Advice for a Javascript/Typescript dev getting into the python ecosystem,Lupexlol,2025-10-21 21:40:36,0,9,"I'm a typescript dev that worked with frontend frameworks and nodejs for the last 10 years.
+
+I just joined a startup and I'm required to build a serve...","I'm a typescript dev that worked with frontend frameworks and nodejs for the last 10 years.
+
+I just joined a startup and I'm required to build a serverless rest api with a python based stack.
+
+The problem is that I have around a few days to figure out what's considered industry standard currently for the python ecosystem, and I can't afford to take any wrong turns here.
+
+Of course the particularities of the project might affect your answer to some degree and I'm aware of that, but for the sake of trying to point me to the right direction let's try to make the best out of this.
+
+I would make some typescript analogies in order for you to better understand what I'm aiming at with the stack.
+
+1.ORM - drizzle (will use postgres)
+2.Deployment - vercel/fallback to aws lambda
+3.Package manager - pnpm
+4.Types - typescript
+
+The most uncertainities I have are about the platform where I have to deploy this(I really want something that is serverless and has good DX), vercel is such a no brainer rn for typescript projects, and I wonder if I have similar no brainers in python as well.
+
+I have read about modal for deploying FastAPI, but again I'm not sure.
+
+Really appreciate anyone taking time to answer this.",2025-10-22T15:07:19.932850
+1occzel,https://www.reddit.com/r/Python/comments/1occzel/namedtuples_are_a_pita/,NamedTuples are a PITA,JuroOravec,2025-10-21 21:28:58,0,16,I've also created a thread for this on Python forum - [see here](https://discuss.python.org/t/allow-to-pass-defaults-when-defining-namedtuple-dynamica...,"I've also created a thread for this on Python forum - [see here](https://discuss.python.org/t/allow-to-pass-defaults-when-defining-namedtuple-dynamically/104484).
+
+TL;DR - When defining NamedTuples dynamically, there should be a single interface that'd allow to pass all 3 - field names, annotations, and defaults.
+
+I needed to convert to convert normal Python classes into NamedTuples. (see final implementation [here](https://github.com/django-components/django-components/pull/1466#discussion_r2447261223))
+
+❌ For normal classes, you could simply make a new class that subclasses from both.
+
+    class X(MyClass, NamedTuple):
+        pass
+
+But NamedTuples don't support that.
+
+❌ And you can't further subclass the subclass of `NamedTuples`:
+
+    class Another(NamedTuple):
+        x: int = 1
+    
+    class X(Another):
+        y: str
+
+❌ When using `typing.NamedTuple` as a function, you can't pass in defaults:
+
+    my_class = typing.NamedTuple(""MyClass"", [(""x"", int), (""y"", str)])
+
+I tried setting the defaults ([`_field_defaults`](https://docs.python.org/3/library/collections.html#collections.somenamedtuple._field_defaults)) manually, but Python wasn't picking that up.
+
+❌ One option was to define the NamedTuple with a class syntax as a string, and then evaluate that string. But that had 2 problems - 1) security risk, and 2) we'd need to import all the types used in annotations:
+
+    my_cls_str = """"""
+    from typing import NamedTuple
+    
+    from path.to.custom import CustomClass
+    
+    class MyClass(NamedTuple):
+        x: int
+        y: str
+        z: CustomClass
+    """"""
+    my_cls = eval(my_cls_str, {}, {})
+
+✅ Lastly I managed to get it working using `collections.namedtuple`. This function doesn't define the field annotations, but it is able to handle defaults. Just one annoying thing was how it sets defaults the same way as Python functions do - it assigns the defaults from the back of the function signature.
+
+So if I have NamedTuple with 3 fields - `x`, `y`, and `z`, and I set defaults to `[""hello"", 123]`:
+
+    my_cls = namedtuple(""MyClass"", [""x"", ""y"", ""z""], defaults=[""hello"", 123])
+
+then this is the same as writing:
+
+    class MyClass(NamedTuple):
+        x: int
+        y: str = ""hello""
+        z: int = 123
+
+One caveat is that `collections.namedtuple()` doesn't set the annotations, so I had also set `__annotations__` at the end.
+
+One thing I didn't know - when defining `NamedTuple`, the fields it recognizes are only those that are annotated. If a field is NOT annotated, it's treated as a CLASS VARIABLE:
+
+    class MyClass(NamedTuple):
+        x: int            # Required field
+        y: str = ""hello""  # Optional field (with default)
+        z = 123           # Class var!
+
+So at the end I also assigned the class variables to the new namedtuple class.
+
+Surprisingly LLMs were really bad at solving this, so I'm hoping this comment gets into the next training set.",2025-10-22T15:07:19.932892
+1occonw,https://www.reddit.com/r/Python/comments/1occonw/tstrings_pythons_fifth_string_formatting_technique/,T-Strings: Python's Fifth String Formatting Technique?,treyhunner,2025-10-21 21:16:36,169,52,"Every time I've talked about Python 3.14's new t-strings online, many folks have been confused about how t-strings are different from f-strings, why t...","Every time I've talked about Python 3.14's new t-strings online, many folks have been confused about how t-strings are different from f-strings, why t-strings are useful, and whether t-strings are a replacement for f-strings.
+
+  
+I published [a short article (and video) on Python 3.14's new t-strings](https://pym.dev/t-strings-in-python/) that's meant to explain this.
+
+The TL;DR:
+
+* Python has had 4 string formatting approaches before t-strings
+* T-strings are different because they *don't actually return strings*
+* T-strings are useful for library authors who need the disassembled parts of a string interpolation for the purpose of pre-processing interpolations
+* T-strings definitely do not replace f-strings: keep using f-strings until specific libraries tell you to use a t-string with one or more of their utilities
+
+Watch the video or read the article for a short demo and a library that uses them as well.
+
+If you've been confusing about t-strings, I hope this explanation helps.",2025-10-22T15:07:19.933082

@@ -23,5 +23,6 @@ python skool_crawler.py fetch-details --group ai-automation-society --storage_st
 python skool_crawler.py summarize --group ai-automation-society --limit 10 --openai_key $OPENAI_KEY
 
 # 一键全部运行（登录 -> fetch list -> parse -> fetch details -> summarize）
-python skool_crawler.py run_all --group ai-automation-society --storage_state skool_state.json --comment_limit 40 --openai_key None --debug
+python skool_crawler_doubao.py --group ai-automation-society --limit 3 --storage_state skool_state.json --output_csv skool_posts.csv --output_db skool_scrape.db --summary_out summary_doubao.json --doubao_key 165e659b-a12e-462d-8398-68da89fbcebb --debug
+
 """
