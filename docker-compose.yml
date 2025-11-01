@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: unified_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: unified_kg
+      MYSQL_USER: skool
+      MYSQL_PASSWORD: skool
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - unified_net
+
+  neo4j:
+    image: neo4j:5.19
+    container_name: crawler_knowledge
+    restart: always
+    environment:
+      NEO4J_AUTH: neo4j/password
+    ports:
+      - "7474:7474"  # Web
+      - "7687:7687"  # Bolt
+    volumes:
+      - ./neo4j_data:/data
+    networks:
+      - unified_net
+
+  knowledge_pipeline:
+    build:
+      context: ./knowledge_pipeline
+    container_name: skool_knowledge_pipeline
+    command: ["python", "skool_knowledge_pipeline.py"]
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - neo4j
+    networks:
+      - unified_net
+
+networks:
+  unified_net:
+    driver: bridge

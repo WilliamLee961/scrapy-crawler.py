@@ -16,6 +16,14 @@ from datetime import datetime, timezone, timedelta
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright, TimeoutError as PlayTimeoutError
 from volcenginesdkarkruntime import Ark
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"), override=True) # 强制覆盖旧环境变量
+MYSQL_URL = os.getenv("MYSQL_URL")
+
+print(f"🧩 当前 .env 加载路径: {os.path.join(os.path.dirname(__file__), '..', '.env')}")
+print(f"🧠 MYSQL_URL 读取结果: {MYSQL_URL}")
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
 DEFAULT_DOUBAO_API_KEY = "165e659b-a12e-462d-8398-68da89fbcebb"
@@ -394,6 +402,75 @@ def save_posts_to_sqlite(posts: List[Dict], db_path: str = DEFAULT_DB):
     conn.close()
     print(f"[save_posts_to_sqlite] 已保存 {len(posts)} 条到 {db_path}")
 
+def init_mysql_table():
+    """初始化 MySQL skool_posts 表结构"""
+    if not MYSQL_URL:
+        print("[MySQL] MYSQL_URL 未设置，跳过表初始化")
+        return
+    try:
+        engine = create_engine(MYSQL_URL)
+        with engine.connect() as conn:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS skool_posts (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    url TEXT UNIQUE,
+                    title TEXT,
+                    author VARCHAR(255),
+                    time VARCHAR(255),
+                    excerpt TEXT,
+                    content LONGTEXT,
+                    fetched_at VARCHAR(255)
+                ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            """))
+        print("[MySQL] skool_posts 表已初始化")
+    except Exception as e:
+        print(f"[MySQL] 初始化失败: {e}")
+
+def save_posts_to_mysql(posts):
+    if not MYSQL_URL:
+        print("MySQL 未配置，跳过保存")
+        return
+    engine = create_engine(MYSQL_URL) # 先连接数据库并创建表
+    with engine.connect() as conn:
+        # 先执行创建表的SQL
+        create_table_sql = """
+        CREATE TABLE IF NOT EXISTS skool_posts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            url TEXT UNIQUE,
+            title TEXT,
+            author VARCHAR(255),
+            time VARCHAR(255),
+            excerpt TEXT,
+            content LONGTEXT,
+            fetched_at VARCHAR(255)
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+        """
+        conn.execute(text(create_table_sql))
+        conn.commit()  # 提交创建表的操作
+
+    with engine.begin() as conn: 
+        for p in posts:
+            conn.execute(text("""
+                INSERT INTO skool_posts (url, title, author, time, excerpt, content, fetched_at)
+                VALUES (:url, :title, :author, :time, :excerpt, :content, :fetched_at)
+                ON DUPLICATE KEY UPDATE
+                    title=VALUES(title),
+                    author=VALUES(author),
+                    time=VALUES(time),
+                    excerpt=VALUES(excerpt),
+                    content=VALUES(content),
+                    fetched_at=VALUES(fetched_at)
+            """), {
+                "url": p.get("url", ""),
+                "title": p.get("title", ""),
+                "author": p.get("author", ""),
+                "time": p.get("time", ""),
+                "excerpt": p.get("excerpt", ""),
+                "content": p.get("content", ""),
+                "fetched_at": datetime.now().isoformat()
+            })
+    print(f"[MySQL] 已写入 {len(posts)} 条 Skool 帖子")
+
 # 使用豆包1.6对文本进行总结
 def summarize_with_doubao(posts: List[Dict], doubao_key: str,
                           model: str = "doubao-1-5-pro-32k-250115") -> Dict:
@@ -510,6 +587,8 @@ def run(args):
         save_posts_to_csv(posts, args.output_csv)
     if args.output_db:
         save_posts_to_sqlite(posts, args.output_db)
+    init_mysql_table()
+    save_posts_to_mysql(posts)
     
     print("[run] 开始调用 Doubao 生成综合摘要（基于抓取到的所有帖子正文）")
     summary_res = summarize_with_doubao(posts, args.doubao_key, model=args.model)

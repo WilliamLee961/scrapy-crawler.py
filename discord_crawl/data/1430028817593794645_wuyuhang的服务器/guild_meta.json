@@ -1,0 +1,58 @@
+{
+  "id": 1430028817593794645,
+  "name": "wuyuhang的服务器",
+  "member_count": 2,
+  "roles": [
+    {
+      "id": 1430028817593794645,
+      "name": "@everyone",
+      "position": 0,
+      "permissions": 2248473465835073
+    },
+    {
+      "id": 1430122974186573868,
+      "name": "ShareKnowledge",
+      "position": 1,
+      "permissions": 117760
+    }
+  ],
+  "channels": [
+    {
+      "id": 1430028818235654145,
+      "name": "欢迎-和-规则",
+      "topic": null,
+      "nsfw": false
+    },
+    {
+      "id": 1430028818235654146,
+      "name": "公告",
+      "topic": null,
+      "nsfw": false
+    },
+    {
+      "id": 1430028818235654147,
+      "name": "资源",
+      "topic": null,
+      "nsfw": false
+    },
+    {
+      "id": 1430028818235654149,
+      "name": "综合",
+      "topic": null,
+      "nsfw": false
+    },
+    {
+      "id": 1430028818235654150,
+      "name": "会议-计划",
+      "topic": null,
+      "nsfw": false
+    },
+    {
+      "id": 1430028818235654151,
+      "name": "题外-话",
+      "topic": null,
+      "nsfw": false
+    }
+  ],
+  "members_count_fetched": 2
+}

@@ -29,6 +29,14 @@ from notification import (
     log_post_info
 )
 from anti_crawl_core import ip_pool, smart_strategy
+from dotenv import load_dotenv
+import mysql.connector
+from mysql.connector import errorcode
+# 加载上级目录的 .env
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+MYSQL_URL = os.getenv("MYSQL_URL")
+NEO4J_URI = os.getenv("NEO4J_URI")
+
 
 # ---------------------- 1. 全局配置与初始化 ----------------------
 # API服务配置
@@ -403,6 +411,8 @@ class CrawlerState:
                 # ---------- Step 4: 保存基础帖子 ----------
                 save_posts_to_sqlite(new_posts)
                 save_posts_to_csv(new_posts)
+                init_mysql_table()
+                save_posts_to_mysql(new_posts)
 
                 # ---------- Step 5: 生成整体综述 ----------
                 print(f"[后台爬虫] 调用 summarize_with_doubao 生成整体中文综述（{len(new_posts)} 条）...")
@@ -592,6 +602,68 @@ def save_posts_to_sqlite(posts: List[Dict], db_path: str = NEW_DB_PATH):
     conn.close()
     print(f"[save_posts_to_sqlite] 已保存 {len(posts)} 条到 {db_path}；第一条 content 片段：{posts[0].get('content','')[:200]}")
 
+import pymysql
+from sqlalchemy import create_engine, text
+
+def init_mysql_table():
+    """初始化 MySQL reddit_posts 表"""
+    try:
+        engine = create_engine(MYSQL_URL)
+        with engine.connect() as conn:
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS reddit_posts (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    reddit_id VARCHAR(50) UNIQUE,
+                    url TEXT UNIQUE,
+                    title TEXT,
+                    author VARCHAR(255),
+                    time VARCHAR(255),
+                    excerpt TEXT,
+                    content LONGTEXT,
+                    fetched_at VARCHAR(255)
+                ) CHARACTER SET utf8mb4;
+            """))
+            print("[MySQL] reddit_posts 表已初始化")
+    except Exception as e:
+        print(f"[MySQL] 初始化失败: {e}")
+
+def save_posts_to_mysql(posts: List[Dict]):
+    """保存帖子到 MySQL 数据库 crawler_db"""
+    if not MYSQL_URL:
+        print("[MySQL] MYSQL_URL 未设置，跳过保存")
+        return
+
+    posts = normalize_posts_to_content(posts)
+    try:
+        engine = create_engine(MYSQL_URL)
+        with engine.begin() as conn:
+            for post in posts:
+                conn.execute(text("""
+                    INSERT INTO reddit_posts 
+                    (reddit_id, url, title, author, time, excerpt, content, fetched_at)
+                    VALUES (:reddit_id, :url, :title, :author, :time, :excerpt, :content, :fetched_at)
+                    ON DUPLICATE KEY UPDATE
+                        title = VALUES(title),
+                        author = VALUES(author),
+                        time = VALUES(time),
+                        excerpt = VALUES(excerpt),
+                        content = VALUES(content),
+                        fetched_at = VALUES(fetched_at)
+                """), {
+                    "reddit_id": post.get("id", ""),
+                    "url": post.get("url", ""),
+                    "title": post.get("title", ""),
+                    "author": post.get("author", ""),
+                    "time": post.get("time", "") or post.get("created_utc", ""),
+                    "excerpt": post.get("excerpt", ""),
+                    "content": post.get("content", ""),
+                    "fetched_at": post.get("fetched_at", datetime.now().isoformat())
+                })
+        print(f"[MySQL] 已保存 {len(posts)} 条帖子到 MySQL")
+    except Exception as e:
+        print(f"[MySQL] 保存失败: {e}")
+
+
 def load_posts_from_files(db_path: str = NEW_DB_PATH, csv_path: str = NEW_CSV_PATH) -> List[Dict]:
     """从新DB或CSV读取帖子（优先读DB，DB不存在则读CSV）"""
     posts = []
@@ -648,6 +720,8 @@ def crawl_save_and_summarize(crawler, strategy, doubao_key,
             p["excerpt"] = (p["content"][:150] + "...") if len(p["content"]) > 150 else p["content"]
         save_posts_to_sqlite(all_new_posts, db_path=new_db)
         save_posts_to_csv(all_new_posts, csv_path=new_csv)
+        init_mysql_table()
+        save_posts_to_mysql(all_new_posts)
         
         # 步骤3：从新文件读取帖子，调用豆包生成综述
         print("\n===== 开始生成综合综述 =====")
