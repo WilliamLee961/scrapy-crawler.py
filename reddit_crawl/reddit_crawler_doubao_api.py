@@ -157,15 +157,17 @@ def get_post_summary(text: str) -> str:
     
     try:
         # 调用豆包官方SDK的chat.completions.create方法
-        completion = doubao_client.chat.completions.create(
+        result = doubao_client.chat.completions.create(
             model=API_CONFIG["doubao_model"],
             messages=[
-                {"role": "system", "content": "你是一名中文科技文章综述专家"},
+                {"role": "system", "content": "你是一个资深的擅长信息综合的中文助手"},
                 {"role": "user", "content": text}
             ]
         )
         # 从返回结果中提取内容（按官方响应格式）
-        return completion.choices[0].message.content
+        summary_text = result.choices[0].message.content
+        summary_text = summary_text.replace("\\n", "\n").replace("\\t", "\t").strip()
+        return summary_text
     except Exception as e:
         return f"豆包API调用失败: {str(e)}"
 
@@ -281,7 +283,8 @@ class CrawlerState:
             summary_text = summary_result.get("summary", "").strip()
             if not summary_text:
                 summary_text = "（综述生成失败或内容为空）"
-
+            if summary_result.get("summary"):
+                summary_result["summary"] = summary_result["summary"].replace("\\n", "\n").replace("\\t", "\t").strip()
             summary_path = f"reddit_summary_{subreddit}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
             with open(summary_path, "w", encoding="utf-8") as f:
                 f.write(summary_text)
@@ -822,10 +825,19 @@ def start_crawler_api(
             raise HTTPException(status_code=500, detail=f"爬虫启动成功，但crawl_save_and_summarize失败: {str(e)}")
     raise HTTPException(status_code=400, detail="爬虫已在进行中，无需重复启动")
 
-@app.get("/api/crawler/search-today", tags=["1. 爬虫状态管理"])
-def search_today_api(
+@app.get("/api/crawler/search-keyword", tags=["1. 爬虫状态管理"])
+def search_api(
     keyword: str = Query(..., description="搜索关键词，如 'Russia-Ukraine War'"),
-    limit: int = Query(10, description="返回结果数量"),
+    limit: int = Query(10, description="返回结果数量(建议 10至50)"),
+    time_range: str = Query(
+        "day",
+        description=(
+            "时间范围，可选值：\n"
+            "英文：'hour', 'day', 'week', 'month', 'year', 'all'\n"
+            "中文：'过去一小时', '今天', '上周', '上个月', '去年', '所有'\n"
+            "默认：'day'（今天）"
+        )
+    ),
     api_key: str = Depends(verify_api_key)
 ) -> Dict[str, Any]:
     try:
@@ -838,11 +850,11 @@ def search_today_api(
             PROXY_HOST, PROXY_PORT = ip_parts[0], int(ip_parts[1])
             print(f"[search_today_api] 使用代理: {selected_ip['ip']}")
 
-        posts = crawler.search_reddit_by_keyword_today(keyword, limit=limit)
+        posts = crawler.search_reddit_by_keyword(keyword, limit=limit, time_range = time_range,)
         if not posts:
             return {
                 "code": 200,
-                "message": f"关键词 '{keyword}' 今日未找到帖子",
+                "message": f"关键词 '{keyword}' 在时间范围 '{time_range}'未找到帖子",
                 "data": {"total": 0, "posts": []}
             }
 
@@ -857,13 +869,16 @@ def search_today_api(
             doubao_key=API_CONFIG["doubao_api_key"],
             model=API_CONFIG["doubao_model"]
         )
+        summary_text = summary_result.get("summary", "")
+        summary_text = summary_text.replace("\\n", "\n").replace("\n\n", "<br><br>").replace("\n", "<br>")
+        
         return {
             "code": 200,
-            "message": f"关键词 '{keyword}' 搜索成功，共 {len(posts)} 条帖子",
+            "message": f"关键词 '{keyword}' 搜索成功，共 {len(posts)} 条含有正文的帖子",
             "data": {
                 "total": len(posts),
                 "posts": posts,
-                "summary": summary_result.get("summary", "")
+                "summary": summary_text
             }
         }
     except Exception as e:

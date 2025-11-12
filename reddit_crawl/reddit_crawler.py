@@ -293,7 +293,7 @@ class RedditCrawler:
             traceback.print_exc()
             return []
         
-    def search_reddit_by_keyword_today(self, keyword: str, limit: int = 20):
+    def search_reddit_by_keyword(self, keyword: str, limit: int = 20, time_range: str = "day"):
         """
         使用 Reddit 官方搜索接口 + PRAW 获取正文
         Step 1: 调用 Reddit 官方 JSON API 搜索帖子 ID（不依赖 Pushshift）
@@ -303,17 +303,51 @@ class RedditCrawler:
         import requests, time
 
         print(f"\n🔍 正在搜索关键词：{keyword}")
+        mapping = {
+            "hour": "hour",
+            "过去一小时": "hour",
+            "今天": "day",
+            "day": "day",
+            "week": "week",
+            "上周": "week",
+            "month": "month",
+            "上个月": "month",
+            "year": "year",
+            "去年": "year",
+            "all": "all",
+            "所有": "all",
+        }
+        # 规范化输入（小写、去除首尾空白）
+        raw_time = (time_range or "").strip().lower()
+        t_value = mapping.get(raw_time)
+        if t_value is None:
+            # 有可能用户传入英文全称（例如 "today"），再作一次常见替换尝试
+            alt_map = {
+                "today": "day",
+                "yesterday": "day",
+                "this_week": "week",
+                "this_month": "month",
+                "this_year": "year"
+            }
+            t_value = mapping.get(alt_map.get(raw_time, ""), None)
+        if t_value is None:
+            if raw_time in {"hour", "day", "week", "month", "year", "all"}:
+                t_value = raw_time
+            else:
+                print(f"[WARN] 不支持的 time_range: '{time_range}'，将使用默认 'day'")
+                t_value = "day"
+        print(f"\n🔍 正在搜索关键词：{keyword} （时间范围：{t_value}）")
 
         # Step 1: Reddit 官方 JSON 搜索接口（不走 PRAW，更快）
         search_url = "https://www.reddit.com/search.json"
         params = {
             "q": keyword,
-            "sort": "new",          # 可改为 "relevance"、"top"
+            "sort": "relevance",          # 可改为 "relevance"、"top"
             "limit": limit,
-            "t": "day",             # 搜索最近一天
+            "t": t_value,             # 搜索最近一天
             "restrict_sr": False,   # 全站搜索
         }
-        headers = {"User-Agent": "Mozilla/5.0 (reddit crawler bot by lijiahang)"}
+        headers = {"User-Agent": "Mozilla/5.0 (reddit crawler bot by jiahang)"}
 
         try:
             resp = requests.get(search_url, params=params, headers=headers, timeout=20)
@@ -326,7 +360,6 @@ class RedditCrawler:
             print(f"❌ Reddit 搜索失败: {e}")
             ids = []
 
-        # 若没搜到结果则直接返回空
         if not ids:
             return []
 
@@ -335,7 +368,6 @@ class RedditCrawler:
         for pid in ids:
             try:
                 s = self.reddit.submission(id=pid)
-                # 跳过无正文帖子
                 if not s.selftext.strip():
                     continue
 
@@ -345,8 +377,8 @@ class RedditCrawler:
                     "author": s.author.name if s.author else None,
                     "url": f"https://www.reddit.com{s.permalink}",
                     "content": s.selftext,
-                    "score": s.score,
-                    "time": s.created_utc,
+                    "score": getattr(s, "score", 0),
+                    "time": getattr(s, "created_utc", None),
                 }
                 posts.append(post_info)
 
@@ -417,12 +449,21 @@ if __name__ == "__main__":
         # ✅ 测试 2：关键词搜索函数（新增）
         print("\n🔍 开始测试 search_reddit_by_keyword_today 函数 ...")
         keyword = "Russia-Ukraine War"
-        search_results = crawler.search_reddit_by_keyword_today(keyword, limit=10)
-        print(f"🔎 搜索关键词 '{keyword}' 得到 {len(search_results)})条结果：")
-        for i, post in enumerate(search_results, start=1):
-            print(f"{i}. [{post['title']}]({post['content'][:150]}) by {post['author']}")
+        time_ranges_to_test = ["hour", "day", "week", "month", "year", "all", "今天", "上周"]
+        
+        for tr in time_ranges_to_test:
+            print(f"\n--- 测试 time_range = '{tr}' ---")
+            try:
+                search_results = crawler.search_reddit_by_keyword(keyword, limit=30, time_range=tr)
+                print(f"🔎 搜索关键词 '{keyword}' 在范围 '{tr}' 得到 {len(search_results)} 条结果")
+                # 打印每条结果的简短信息（避免输出过长）
+                for i, post in enumerate(search_results, start=1):
+                    excerpt = (post['content'][:140] + '...') if post.get('content') else ''
+                    print(f"{i}. {post['title'][:80]} | author={post['author']} | score={post['score']} | excerpt={excerpt}")
+            except Exception as e:
+                print(f"测试 time_range='{tr}' 出错: {e}")
+        print("\n✅ 关键词搜索函数（含 time_range）测试完成")
 
-        print("\n✅ 关键词搜索函数运行完毕")
     except Exception as e:
         print("\n API连接验证失败！")
         traceback.print_exc()
