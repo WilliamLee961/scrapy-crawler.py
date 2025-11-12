@@ -1,1 +1,4 @@
 discord_crawl/
+reddit_crawl/reddit_summary_*
+reddit_crawl/reddit_test_posts.*
+reddit_crawl/summary_result_test.txt

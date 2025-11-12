@@ -107,10 +107,10 @@ class RedditCrawler:
             # 4. 初始化 PRAW（关键：用 requestor_kwargs 传入代理，替代环境变量）
             try:
                 # 设置新的代理环境变量（覆盖 HTTP/HTTPS 流量）
-                os.environ["HTTP_PROXY"] = proxy_url
-                os.environ["HTTPS_PROXY"] = proxy_url
-                os.environ["ALL_PROXY"] = proxy_url
-                print(f" 已设置环境变量代理：{proxy_url}")
+                # os.environ["HTTP_PROXY"] = proxy_url
+                # os.environ["HTTPS_PROXY"] = proxy_url
+                # os.environ["ALL_PROXY"] = proxy_url
+                # print(f" 已设置环境变量代理：{proxy_url}")
 
                 self.reddit = praw.Reddit(
                     client_id=CLIENT_ID,
@@ -251,38 +251,6 @@ class RedditCrawler:
                 "selftext": "",
                 "top_comments": []
             }
-    # def _format_post_info(self, post, max_comments):
-    #     """复用帖子格式化逻辑（减少重复代码）"""
-    #     # 基础帖子信息
-    #     # 1. 提取原始时间戳（关键：用于排序）
-    #     created_utc = post.created_utc  # Reddit帖子对象原生包含的Unix时间戳
-    #     post_info = {
-    #         "id": post.id,  # 新增 ID，用于去重
-    #         "title": post.title,
-    #         "author": post.author.name if post.author else "[作者已删除]",
-    #         "score": post.score,
-    #         "created_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(post.created_utc)),
-    #         "created_utc": created_utc,
-    #         "url": post.url,
-    #         "comment_count": post.num_comments,
-    #         "content_excerpt": post.selftext[:1000] + "..." if len(post.selftext) > 1000 else post.selftext,
-    #         "top_comments": []
-    #     }
-    #     # 爬取顶级评论
-    #     try:
-    #         post.comments.replace_more(limit=0)  # 禁用“加载更多评论”
-    #         for comment in post.comments.list()[:max_comments]:
-    #             if hasattr(comment, 'body'):
-    #                 post_info["top_comments"].append({
-    #                     "author": comment.author.name if comment.author else "[已删除]",
-    #                     "body": comment.body[:300] + "..." if len(comment.body) > 300 else comment.body,
-    #                     "score": comment.score,
-    #                     "created_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(comment.created_utc)),
-    #                 })
-    #     except Exception as e:
-    #         print(f"⚠️ 获取评论出错：{str(e)}（跳过该帖子评论）")
-    #     return post_info
-
 
     def crawl_hot_posts(self, subreddit_name='python', limit=5, max_comments=3):
         """爬取指定子版块的「热门帖子」（遵循 Reddit API 速率限制）"""
@@ -324,7 +292,73 @@ class RedditCrawler:
             print(f"获取新帖子时出错: {e}")
             traceback.print_exc()
             return []
-            
+        
+    def search_reddit_by_keyword_today(self, keyword: str, limit: int = 20):
+        """
+        使用 Reddit 官方搜索接口 + PRAW 获取正文
+        Step 1: 调用 Reddit 官方 JSON API 搜索帖子 ID（不依赖 Pushshift）
+        Step 2: 通过 PRAW 获取正文内容（保证 selftext 完整）
+        """
+
+        import requests, time
+
+        print(f"\n🔍 正在搜索关键词：{keyword}")
+
+        # Step 1: Reddit 官方 JSON 搜索接口（不走 PRAW，更快）
+        search_url = "https://www.reddit.com/search.json"
+        params = {
+            "q": keyword,
+            "sort": "new",          # 可改为 "relevance"、"top"
+            "limit": limit,
+            "t": "day",             # 搜索最近一天
+            "restrict_sr": False,   # 全站搜索
+        }
+        headers = {"User-Agent": "Mozilla/5.0 (reddit crawler bot by lijiahang)"}
+
+        try:
+            resp = requests.get(search_url, params=params, headers=headers, timeout=20)
+            resp.raise_for_status()
+            json_data = resp.json()
+            children = json_data.get("data", {}).get("children", [])
+            ids = [c["data"]["id"] for c in children]
+            print(f"✅ Reddit 搜索到 {len(ids)} 个帖子 ID")
+        except Exception as e:
+            print(f"❌ Reddit 搜索失败: {e}")
+            ids = []
+
+        # 若没搜到结果则直接返回空
+        if not ids:
+            return []
+
+        # Step 2: PRAW 获取正文
+        posts = []
+        for pid in ids:
+            try:
+                s = self.reddit.submission(id=pid)
+                # 跳过无正文帖子
+                if not s.selftext.strip():
+                    continue
+
+                post_info = {
+                    "id": s.id,
+                    "title": s.title,
+                    "author": s.author.name if s.author else None,
+                    "url": f"https://www.reddit.com{s.permalink}",
+                    "content": s.selftext,
+                    "score": s.score,
+                    "time": s.created_utc,
+                }
+                posts.append(post_info)
+
+                # 延时以防速率限制
+                time.sleep(1)
+
+            except Exception as e:
+                print(f"❌ 获取 {pid} 失败: {e}")
+
+        print(f"✅ 成功获取 {len(posts)} 条含正文的帖子")
+        return posts
+          
     def monitor_new_posts(self, subreddit_name="python", interval=60, max_push=3):
         """
         持续监控新帖子并推送
@@ -380,6 +414,15 @@ if __name__ == "__main__":
         print("\n API连接验证成功，可以开始爬取")
         collected_get_posts = crawler.get_new_posts(subreddit_name='python', limit=10, max_comments=5)
         print("\n API爬取子模块成功！")
+        # ✅ 测试 2：关键词搜索函数（新增）
+        print("\n🔍 开始测试 search_reddit_by_keyword_today 函数 ...")
+        keyword = "Russia-Ukraine War"
+        search_results = crawler.search_reddit_by_keyword_today(keyword, limit=10)
+        print(f"🔎 搜索关键词 '{keyword}' 得到 {len(search_results)})条结果：")
+        for i, post in enumerate(search_results, start=1):
+            print(f"{i}. [{post['title']}]({post['content'][:150]}) by {post['author']}")
+
+        print("\n✅ 关键词搜索函数运行完毕")
     except Exception as e:
         print("\n API连接验证失败！")
         traceback.print_exc()

@@ -786,7 +786,7 @@ class StrategyUpdateRequest(BaseModel):
     target_subreddit: Optional[str] = None
     max_posts_per_crawl: Optional[int] = None  # 该参数实际已被固定为10
 
-
+crawler = RedditCrawler()
 # ---------------------- 6. API端点实现 ----------------------
 @app.get("/api/crawler/state", tags=["1. 爬虫状态管理"])
 def get_crawler_state_api(
@@ -806,7 +806,7 @@ def start_crawler_api(
     if success:
         try:
             summarize_result = crawl_save_and_summarize(
-                crawler=RedditCrawler(),
+                crawler=crawler,
                 strategy=smart_strategy.get_current_strategy(),
                 doubao_key=API_CONFIG["doubao_api_key"]
             )
@@ -822,6 +822,53 @@ def start_crawler_api(
             raise HTTPException(status_code=500, detail=f"爬虫启动成功，但crawl_save_and_summarize失败: {str(e)}")
     raise HTTPException(status_code=400, detail="爬虫已在进行中，无需重复启动")
 
+@app.get("/api/crawler/search-today", tags=["1. 爬虫状态管理"])
+def search_today_api(
+    keyword: str = Query(..., description="搜索关键词，如 'Russia-Ukraine War'"),
+    limit: int = Query(10, description="返回结果数量"),
+    api_key: str = Depends(verify_api_key)
+) -> Dict[str, Any]:
+    try:
+        # 代理策略可复用现有逻辑
+        ip_status = ip_pool.get_pool_status()["statistics"]
+        PROXY_HOST = PROXY_PORT = None
+        if ip_status["valid_ip_count"] > 0:
+            selected_ip = ip_pool.get_random_valid_ip()
+            ip_parts = selected_ip["ip"].split(":")
+            PROXY_HOST, PROXY_PORT = ip_parts[0], int(ip_parts[1])
+            print(f"[search_today_api] 使用代理: {selected_ip['ip']}")
+
+        posts = crawler.search_reddit_by_keyword_today(keyword, limit=limit)
+        if not posts:
+            return {
+                "code": 200,
+                "message": f"关键词 '{keyword}' 今日未找到帖子",
+                "data": {"total": 0, "posts": []}
+            }
+
+        posts = normalize_posts_to_content(posts)
+        save_posts_to_sqlite(posts)
+        save_posts_to_csv(posts)
+        init_mysql_table()
+        save_posts_to_mysql(posts)
+
+        summary_result = summarize_with_doubao(
+            posts=posts,
+            doubao_key=API_CONFIG["doubao_api_key"],
+            model=API_CONFIG["doubao_model"]
+        )
+        return {
+            "code": 200,
+            "message": f"关键词 '{keyword}' 搜索成功，共 {len(posts)} 条帖子",
+            "data": {
+                "total": len(posts),
+                "posts": posts,
+                "summary": summary_result.get("summary", "")
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"搜索处理失败: {str(e)}")
+    
 @app.get("/api/crawler/results", tags=["1.爬虫状态管理"])
 def get_crawler_results(
     limit: int = Query(100, description="返回结果的最大数量"),
