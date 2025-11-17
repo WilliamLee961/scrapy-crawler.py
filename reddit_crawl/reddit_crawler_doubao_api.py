@@ -46,7 +46,7 @@ API_CONFIG = {
     "api_key": "RedditCrawler_2024",
     "log_file_path": "reddit_posts.log",
     "max_concurrent": 100,
-    "doubao_api_key": "165e659b-a12e-462d-8398-68da89fbcebb",  # 替换为实际API密钥
+    "doubao_api_key": "538358bb-f72f-4c17-acd1-31744d34836b",  # 替换为实际API密钥
     "doubao_base_url": "https://ark.cn-beijing.volces.com/api/v3",  # 官方base_url
     "doubao_model": "doubao-1-5-pro-32k-250115"  # 官方指定模型
 }

@@ -1,7 +1,7 @@
 # 帖子内容抓取并调用豆包1.6对最新20条帖子形成综述
 
 # Usage example:
-# python skool_crawler_doubao.py --group ai-automation-society --limit 3 --storage_state skool_state.json --output_csv skool_posts.csv --output_db skool_scrape.db --summary_out summary_doubao.json --doubao_key 165e659b-a12e-462d-8398-68da89fbcebb --debug
+# python skool_crawler_doubao.py --group ai-automation-society --limit 3 --storage_state skool_state.json --output_csv skool_posts.csv --output_db skool_scrape.db --summary_out summary_doubao.json --doubao_key 538358bb-f72f-4c17-acd1-31744d34836b --debug
 
 import os
 import re
@@ -32,6 +32,26 @@ DOUBAO_API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completion"
 DEFAULT_DB = "skool_scrape.db"
 DEFAULT_CSV = "skool_posts.csv"
 DEFAULT_SUMMARY_JSON = "summary_doubao.json"
+
+# --- 修改开始 ---
+USER_PROMPT_TEMPLATE = """
+你是一名专业研究报告撰写者，请根据以下爬虫数据，自动提取主要话题的大标题和相关小标题，并组织成结构严谨、详实的报告。
+
+【要求】
+1. 使用以下报告结构：
+   1. 引言
+   2. 主题提炼
+   3. 帖子综述
+   4. 趋势与模式分析
+   5. 结论与展望
+2. 所有标题和内容必须基于提供的数据自动生成，不预设领域。
+3. 报告语言为简体中文，风格正式、客观。
+4. 数据可能包含 Reddit 或 Skool 帖子，格式为 JSON，需先解析提炼关键信息。
+5. 大标题需揭示主要主题，小标题为主题下的细分内容，摘要精简但信息完整。
+
+【爬虫数据】
+{data}
+"""
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
@@ -477,35 +497,21 @@ def summarize_with_doubao(posts: List[Dict], doubao_key: str,
     # 将多条帖子内容合并，然后调用 Doubao API 生成中文综合摘要（主题 + 技术要点）
     if not posts:
         return {"summary": "", "raw_response": None}
-    snippets = []
-    for p in posts:
-        content = p.get("content") or p.get("excerpt") or ""
-        if not content:
-            continue
-        # keep each content short enough to fit in token limit
-        snippets.append(p.get("title", "") + ": " + (content[:1000]))
-    merged_text = "\n\n".join(snippets)
-    # system_prompt = (
-    #     "你是一个专业的中文技术内容总结助手。"
-    # )
-    user_prompt = (
-        "你是一个优秀的中文新闻编辑。"
-    "下面是一批社群帖子正文（已去重、按时间排序）。"
-    "请根据这些内容，生成一个清晰、美观、排版良好的中文综述报告。"
-    "报告包含以下三个部分，必须使用自然换行，不要输出任何 '\\n' 或转义字符：\n\n"
-    "=== 帖子内容综述报告 ===\n\n"
-    "<SUMMARY>\n"
-    "请用自然段落（每段之间空一行）描述这些帖子的主要讨论内容，控制在 1-2 段。\n\n"
-    "<KEY_POINTS>\n"
-    "提炼出不超过 8 条要点，每条前加 '· ' 或 '- '，每条独立一行，不要带数字序号。\n\n"
-    "<SENTIMENT>\n"
-    "最后总结整体态度（积极 / 中性 / 负面），并用 1-2 句话说明依据。\n\n"
-    "⚠️ 输出排版要求：\n"
-    "- 绝对不要输出 '\\n' 或 '\\t' 等符号。\n"
-    "- 各部分之间保留一个空行。\n"
-    "- 仅使用自然换行进行分段。\n\n"
-    "输入文本如下：\n\n" + merged_text
-    )
+    # snippets = []
+    # for p in posts:
+    #     content = p.get("content") or p.get("excerpt") or ""
+    #     if not content:
+    #         continue
+    #     # keep each content short enough to fit in token limit
+    #     snippets.append(p.get("title", "") + ": " + (content[:1000]))
+    # merged_text = "\n\n".join(snippets)
+
+    def default_serializer(obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return str(obj)  # 兜底转字符串
+    data_json = json.dumps(posts, ensure_ascii=False, indent=2, default=default_serializer)
+    user_prompt = USER_PROMPT_TEMPLATE.format(data=data_json)
 
     try:
         # 初始化豆包客户端
@@ -519,7 +525,7 @@ def summarize_with_doubao(posts: List[Dict], doubao_key: str,
         completion = client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": "你是一名中文科技文章综述专家。"},
+                {"role": "system", "content": "你是一名文章综述专家,将英文内容生成详细中文综述。"},
                 {"role": "user", "content": user_prompt},
             ],
         )
