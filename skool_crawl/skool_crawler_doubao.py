@@ -1,7 +1,7 @@
 # 帖子内容抓取并调用豆包1.6对最新20条帖子形成综述
 
 # Usage example:
-# python skool_crawler_doubao.py --group ai-automation-society --limit 3 --storage_state skool_state.json --output_csv skool_posts.csv --output_db skool_scrape.db --summary_out summary_doubao.json --doubao_key 538358bb-f72f-4c17-acd1-31744d34836b --debug
+# python skool_crawler_doubao.py --group ai-automation-society --limit 15 --storage_state skool_state.json --output_csv skool_posts.csv --output_db skool_scrape.db --summary_out summary_doubao.json --doubao_key 538358bb-f72f-4c17-acd1-31744d34836b --debug
 
 import os
 import re
@@ -35,19 +35,24 @@ DEFAULT_SUMMARY_JSON = "summary_doubao.json"
 
 # --- 修改开始 ---
 USER_PROMPT_TEMPLATE = """
-你是一名专业研究报告撰写者，请根据以下爬虫数据，自动提取主要话题的大标题和相关小标题，并组织成结构严谨、详实的报告。
+你是一名专业研究报告撰写者，请根据以下爬虫抓取的帖子数据，自动提取主要话题的大标题和相关小标题，并组织成结构严谨、详实的报告。
 
-【要求】
-1. 使用以下报告结构：
+【总体目标】
+生成一份包含引言、主题提炼、帖子综述、趋势与模式分析、结论与展望的中文研究报告，全面呈现帖子中的关键信息，避免遗漏读者可能关心的重要细节。
+
+【具体要求】
+1. 报告结构：
    1. 引言
    2. 主题提炼
    3. 帖子综述
    4. 趋势与模式分析
    5. 结论与展望
-2. 所有标题和内容必须基于提供的数据自动生成，不预设领域。
-3. 报告语言为简体中文，风格正式、客观。
-4. 数据可能包含 Reddit 或 Skool 帖子，格式为 JSON，需先解析提炼关键信息。
-5. 大标题需揭示主要主题，小标题为主题下的细分内容，摘要精简但信息完整。
+2. 所有标题和内容均基于提供的数据自动生成，不预设领域。
+3. 语言为简体中文，风格正式、客观。
+4. **每个小标题下的内容必须是完整的一段话（不少于3句），拒绝单句概括。**
+5. 在帖子综述部分，应保留帖子中的技术细节、案例背景、使用工具、关键数据、引述观点等信息，不要简单压缩成模糊摘要。
+6. 对于趋势分析和结论，结合数据中的具体事例展开，不只是泛泛而谈。
+7. 禁止生成或引用受版权保护的歌词等内容。
 
 【爬虫数据】
 {data}
